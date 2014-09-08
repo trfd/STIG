@@ -29,6 +29,7 @@ SET(SG_LLVM_BUILT_INCLUDE_DIR	   "" CACHE PATH "## STIG: Root Directory containi
 SET(SG_LLVM_LIBS_DIR		"" CACHE PATH "## STIG: Directory containing Clang libraries (usualy the same as SG_CATTRIB_LIB_DIR)")
 
 SET(SG_CLANG_INCLUDE_DIR 	"" CACHE PATH "## STIG: Root Directory containing headers of Clang embedded in cAttrib project")
+SET(SG_CLANG_BUILT_INCLUDE_DIR 	"" CACHE PATH "## STIG: Root Directory containing built headers of Clang embedded in cAttrib project")
 SET(SG_CLANG_LIBS_DIR		"" CACHE PATH "## STIG: Directory containing Clang libraries (usualy the same as SG_CATTRIB_LIB_DIR)")
 
 SET(SG_USED_CLANG_LIBS
@@ -46,6 +47,8 @@ SET(SG_USED_CLANG_LIBS
     ${SG_CLANG_LIBS_DIR}/libclangRewrite.a
     ${SG_CLANG_LIBS_DIR}/libclangEdit.a
     ${SG_CLANG_LIBS_DIR}/libclangAST.a
+    ${SG_CLANG_LIBS_DIR}/libclangASTMatchers.a
+    ${SG_CLANG_LIBS_DIR}/libclangDynamicASTMatchers.a
     ${SG_CLANG_LIBS_DIR}/libclangLex.a
     ${SG_CLANG_LIBS_DIR}/libclangBasic.a
     )
@@ -69,6 +72,8 @@ SET(SG_USED_LLVM_LIBS
 	)
 
 SET(SG_DEPENCIES_LIBS "")
+
+
 
 CONFIGURE_FILE(cmake_config/dev_paths.hpp ${CMAKE_SOURCE_DIR}/devt/source/)
 CONFIGURE_FILE(cmake_config/unit_paths.hpp ${CMAKE_SOURCE_DIR}/unit_test/source/)
@@ -96,6 +101,22 @@ ENDIF(APPLE)
 IF(MSVC)
     SET(CMAKE_CXX_FLAGS "/EHsc")
 ENDIF(MSVC)
+
+
+SET(SG_ADD_INCLUDE_DIRS 
+	${SG_CATTRIB_INCLUDE_DIR}
+  	${SG_CLANG_INCLUDE_DIR}
+  	${SG_CLANG_BUILT_INCLUDE_DIR}
+  	${SG_LLVM_INCLUDE_DIR}
+  	${SG_LLVM_BUILT_INCLUDE_DIR}
+  	)
+
+SET(SG_ADD_LIBS
+	${SG_USED_LLVM_LIBS}
+	${SG_USED_CLANG_LIBS}
+	${SG_CATTRIB_LIB_DIR}/libcAttrib.a
+	${SG_DEPENCIES_LIBS}
+	)
 
 ##############################
 
@@ -146,10 +167,7 @@ SET_PROPERTY(
 	PROPERTY INCLUDE_DIRECTORIES
   	${CMAKE_SOURCE_DIR}/stig/include/
   	${Boost_INCLUDE_DIR}
-  	${SG_CATTRIB_INCLUDE_DIR}
-  	${SG_CLANG_INCLUDE_DIR}
-  	${SG_LLVM_INCLUDE_DIR}
-  	${SG_LLVM_BUILT_INCLUDE_DIR}
+  	${SG_ADD_INCLUDE_DIRS}
 )
 
 
@@ -157,10 +175,7 @@ SET_PROPERTY(
 TARGET_LINK_LIBRARIES(
 	Stig
 	${Boost_LIBRARIES}
-	${SG_USED_CLANG_LIBS}
-	${SG_USED_LLVM_LIBS}
-	${SG_CATTRIB_LIB_DIR}/libcAttrib.a
-	${SG_DEPENCIES_LIBS}
+	${SG_ADD_LIBS}
 	)
 
 
@@ -205,10 +220,7 @@ SET_PROPERTY(
   	${CMAKE_SOURCE_DIR}/unit_test/include/
   	${Boost_INCLUDE_DIR}
   	${CPPUNIT_INCLUDE_DIRS}
-  	${SG_CATTRIB_INCLUDE_DIR}
-  	${SG_CLANG_INCLUDE_DIR}
-  	${SG_LLVM_INCLUDE_DIR}
-  	${SG_LLVM_BUILT_INCLUDE_DIR}
+  	${SG_ADD_INCLUDE_DIRS}
 )
 
 
@@ -257,10 +269,7 @@ SET_PROPERTY(
   	${CMAKE_SOURCE_DIR}/devt/include/
   	${Boost_INCLUDE_DIR}
   	${CPPUNIT_INCLUDE_DIRS}
-  	${SG_CATTRIB_INCLUDE_DIR}
-  	${SG_CLANG_INCLUDE_DIR}
-  	${SG_LLVM_INCLUDE_DIR}
-  	${SG_LLVM_BUILT_INCLUDE_DIR}
+  	${SG_ADD_INCLUDE_DIRS}
 )
 
 

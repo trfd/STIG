@@ -5,7 +5,7 @@
 ///  Static Type Info Generator - A C++ Static Reflexion Tool based on Clang.
 ///  Get more infos on STIG at <https://github.com/trfd/STIG>
 ///
-///  Created by Baptiste Dupy on 09/07/2014.
+///  Created by Baptiste Dupy on 08/09/2014.
 ///  Contact:
 ///          Mail:       <baptiste.dupy@gmail.com>
 ///          GitHub:     trfd <https://github.com/trfd>
@@ -30,20 +30,88 @@
 #define __STDC_LIMIT_MACROS
 #define __STDC_CONSTANT_MACROS
 
-#include <clang/Tooling/CommonOptionsParser.h>
-#include <llvm/Support/CommandLine.h>
+#include "clang/Tooling/CommonOptionsParser.h"
 
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/FrontendAction.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Tooling/Tooling.h"
+
+#include "llvm/Support/CommandLine.h"
+
+#include "RecordDeclNode.hpp"
+
+using namespace clang;
 using namespace clang::tooling;
+using namespace llvm;
 
-// Apply a custom category to all command-line options so that they are the
-// only ones displayed.
+namespace stig
+{
+    std::vector<RecordDeclNode> recordDecls;
+    
+    class StigVisitor
+    : public RecursiveASTVisitor<StigVisitor> {
+    public:
+        explicit StigVisitor(ASTContext *Context)
+        : Context(Context) {}
+        
+        bool VisitCXXRecordDecl(CXXRecordDecl *Declaration)
+        {
+            FullSourceLoc FullLocation = Context->getFullLoc(Declaration->getLocStart());
+            llvm::outs() << "Declaration at "
+            << FullLocation.getSpellingLineNumber() << ":"
+            << FullLocation.getSpellingColumnNumber() << "\n";
+            
+            Declaration->dump();
+            
+            recordDecls.emplace_back(Declaration);
+            
+            return true;
+        }
+        
+    private:
+        ASTContext *Context;
+    };
+    
+    class StigConsumer : public clang::ASTConsumer {
+    public:
+        explicit StigConsumer(ASTContext *Context)
+        : Visitor(Context) {}
+        
+        virtual void HandleTranslationUnit(clang::ASTContext &Context) {
+            Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+        }
+    private:
+        StigVisitor Visitor;
+    };
+    
+    
+    class StigAction : public clang::SyntaxOnlyAction {
+    public:
+        virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer( clang::CompilerInstance &Compiler, llvm::StringRef InFile)
+        {
+            return std::unique_ptr<clang::ASTConsumer>(new StigConsumer(&Compiler.getASTContext()));
+        }
+    };
+
+}
+
 static llvm::cl::OptionCategory MyToolCategory("my-tool options");
 
-int main(int argc, const char **argv) {
-    // CommonOptionsParser constructor will parse arguments and create a
-    // CompilationDatabase.  In case of error it will terminate the program.
+int main(int argc,const char **argv)
+{
     CommonOptionsParser OptionsParser(argc, argv, MyToolCategory);
+    ClangTool Tool(OptionsParser.getCompilations(),
+                   OptionsParser.getSourcePathList());
     
-    // Use OptionsParser.getCompilations() and OptionsParser.getSourcePathList()
-    // to retrieve CompilationDatabase and the list of input file paths.
+    int result = Tool.run(newFrontendActionFactory<stig::StigAction>().get());
+    
+    for(stig::RecordDeclNode& decl : stig::recordDecls)
+    {
+        decl.print();
+    }
+    
+    return result;
 }
