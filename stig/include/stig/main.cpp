@@ -41,7 +41,8 @@
 
 #include "llvm/Support/CommandLine.h"
 
-#include "RecordDeclNode.hpp"
+#include "DeclNode.hpp"
+#include "JSONWriter.hpp"
 
 using namespace clang;
 using namespace clang::tooling;
@@ -108,10 +109,15 @@ int main(int argc,const char **argv)
     
     int result = Tool.run(newFrontendActionFactory<stig::StigAction>().get());
     
+    stig::JSONWriter writer;
+    std::ostringstream strStream;
+
     for(stig::RecordDeclNode& decl : stig::recordDecls)
     {
-        decl.print();
+        writer.writeRecordDecl(strStream, &decl, 0);
     }
+    
+    std::cout<<strStream.str()<<"\n";
     
     return result;
 }

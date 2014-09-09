@@ -3,18 +3,27 @@
 //#include <iostream>
 //#include "ActionHolder.hpp"
 
+template<typename T_>
+struct STRTemp
+{
+    T_ val;
+};
+
 class Object
 {
-    int c;
+    STRTemp<int> c;
 };
 
 namespace ck
 {
-    
-    class Object
+    namespace Ohhh
     {
+        class Object
+        {
         
-    };
+        };    
+    }
+    
     
 	class Action : public Object
 	{
@@ -25,6 +34,11 @@ namespace ck
             INVALID = 0,
             SUCCESS = 1,
             FAILURE = 2
+        };
+
+        struct AAA
+        {
+
         };
         
         virtual State perform() = 0;

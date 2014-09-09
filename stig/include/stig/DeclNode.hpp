@@ -1,5 +1,5 @@
 ///
-///  RecordDeclNode.hpp
+///  DeclNode.hpp
 ///  is part of STIG Project.
 ///
 ///  Static Type Info Generator - A C++ Static Reflexion Tool based on Clang.
@@ -27,13 +27,16 @@
 ///  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-#ifndef STIG_RecordDeclNode_hpp
-#define STIG_RecordDeclNode_hpp
+#ifndef STIG_DeclNode_hpp
+#define STIG_DeclNode_hpp
 
 #include <iostream>
 
 #include <clang/AST/DeclCXX.h>
 #include <clang/Basic/Specifiers.h>
+
+#include "Serialization.hpp"
+
 
 using namespace clang;
 
@@ -44,63 +47,29 @@ namespace stig
     struct FieldDeclNode
     {
         FieldDeclNode(FieldDecl* astdecl)
-        : astFieldDecl(astdecl),
-        strName(static_cast<const NamedDecl*>(astdecl)->getNameAsString())
+        : _name(static_cast<const NamedDecl*>(astdecl)->getNameAsString()),
+        _type(astdecl->getType().getAsString())
         {}
         
-        FieldDeclNode(const FieldDeclNode& refnode)
-        : astFieldDecl(refnode.astFieldDecl),
-        strName(refnode.strName)
-        {}
-        
-        void print() const
-        {
-            std::cout<<"Field: "<<strName<<"\n";
-        }
-        
-        FieldDecl* astFieldDecl;
-        std::string strName;
+        std::string _name;
+        std::string _type;
     };
     
     struct MethodDeclNode
     {        
         MethodDeclNode(CXXMethodDecl* astdecl)
-        : astMethodDecl(astdecl),
-        strName(static_cast<const NamedDecl*>(astdecl)->getNameAsString())
+        : _name(static_cast<const NamedDecl*>(astdecl)->getNameAsString())
         {
-            for(ParmVarDecl* param : astMethodDecl->parameters())
+            for(ParmVarDecl* param : astdecl->parameters())
             {
                 if(!param)
                     continue;
-                parameters.push_back(param->getNameAsString());
+                _params.push_back(param->getNameAsString());
             }
-            
-            num = astMethodDecl->getNumParams();
         }
-        
-        MethodDeclNode(const MethodDeclNode& refnode)
-        : astMethodDecl(refnode.astMethodDecl),
-        strName(refnode.strName),
-        num(refnode.num),
-        parameters(refnode.parameters)
-        {}
-        
-        void print() const
-        {
-            std::cout<<"Method: "<<strName<<"["<<num<<"] ";
-            
-            for(std::string param : parameters)
-            {
-                std::cout<<param<<",";
-            }
-            
-            std::cout<<"\n";
-        }
-        
-        CXXMethodDecl* astMethodDecl;
-        std::string strName;
-        int num;
-        std::vector<std::string> parameters;
+
+        std::string _name;
+        std::vector<std::string> _params;
     };
     
     class RecordDeclNode
@@ -108,73 +77,69 @@ namespace stig
     public:
         
         RecordDeclNode(CXXRecordDecl* astptr)
-        : m_astRDecl(astptr)
         {
-            extractFields();
+            extractFields(astptr);
         }
         
-        CXXRecordDecl* ASTRecordDecl(){ return m_astRDecl; }
-        
-        void print()
+        void extractFields(CXXRecordDecl* astptr)
         {
-            std::cout<<"Class: "<<strName<<"\n";
+            _name =static_cast<const NamedDecl*>(astptr)->getNameAsString();
             
-            if(m_fields[AS_public].size() || m_methods[AS_public].size())
-                std::cout<<"----|| Public:\n";
+            _access = astptr->getAccess();
             
-            for(const FieldDeclNode& field : m_fields[AccessSpecifier::AS_public])
-                field.print();
-            for(const MethodDeclNode& meth : m_methods[AS_public])
-                meth.print();
-            
-            if(m_fields[AS_protected].size() || m_methods[AS_protected].size())
-                std::cout<<"----|| Protected:\n";
-            
-            for(const FieldDeclNode& field : m_fields[AS_protected])
-                field.print();
-            for(const MethodDeclNode& meth : m_methods[AS_protected])
-                meth.print();
-            
-            if(m_fields[AS_private].size() || m_methods[AS_private].size())
-                std::cout<<"----|| Private:\n";
-            
-            for(const FieldDeclNode& field : m_fields[AS_private])
-                field.print();
-            for(const MethodDeclNode& meth : m_methods[AS_private])
-                meth.print();
-        }
-        
-    private:
-        
-        void extractFields()
-        {
-            strName =static_cast<const NamedDecl*>(m_astRDecl)->getNameAsString();
-            
-            for(CXXRecordDecl::method_iterator it = m_astRDecl->method_begin() ;
-                it != m_astRDecl->method_end() ; ++it)
+            for(CXXRecordDecl::method_iterator it = astptr->method_begin() ;
+                it != astptr->method_end() ; ++it)
             {
-                m_methods[it->getAccess()].emplace_back(*it);
+                _methods.emplace_back(*it);
             }
             
-            for(DeclContext::decl_iterator it = static_cast<DeclContext*>(m_astRDecl)->decls_begin() ;
-                it != static_cast<DeclContext*>(m_astRDecl)->decls_end() ; ++it)
+            for(DeclContext::decl_iterator it = static_cast<DeclContext*>(astptr)->decls_begin() ;
+                it != static_cast<DeclContext*>(astptr)->decls_end() ; ++it)
             {
                 if(it->getKind() == Decl::Kind::Field)
                 {
-                    m_fields[it->getAccess()].emplace_back(static_cast<FieldDecl*>(*it));
+                    _fields.emplace_back(static_cast<FieldDecl*>(*it));
                 }
             }
+            
+            extractContext(astptr);
         }
         
-        CXXRecordDecl* m_astRDecl;
+        void extractContext(CXXRecordDecl* astptr)
+        {
+            _context = "";
+            
+            DeclContext* dclCtx = astptr->getDeclContext();
+            
+            do
+            {
+                
+                if(dclCtx->isNamespace())
+                {
+                    _context = static_cast<NamespaceDecl*>(dclCtx)->getNameAsString() + "::" + _context;
+                }
+                else if(dclCtx->isRecord())
+                {
+                   _context = static_cast<CXXRecordDecl*>(dclCtx)->getNameAsString() + "::" + _context;
+                }
+                
+                dclCtx = dclCtx->getParent();
+
+            }while(dclCtx);
+        }
         
-        std::string strName;
+        AccessSpecifier _access;
         
-        std::map<AccessSpecifier,std::vector<FieldDeclNode>> m_fields;
+        std::string _name;
         
-        std::map<AccessSpecifier,std::vector<MethodDeclNode>> m_methods;
+        std::string _context;
         
+        std::vector<FieldDeclNode> _fields;
+        
+        std::vector<MethodDeclNode> _methods;
     };
 }
+
+#include "NodeSerialization.hpp"
 
 #endif
