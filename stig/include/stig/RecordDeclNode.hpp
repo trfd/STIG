@@ -67,23 +67,31 @@ namespace stig
         MethodDeclNode(CXXMethodDecl* astdecl)
         : astMethodDecl(astdecl),
         strName(static_cast<const NamedDecl*>(astdecl)->getNameAsString())
-        {}
+        {
+            for(ParmVarDecl* param : astMethodDecl->parameters())
+            {
+                if(!param)
+                    continue;
+                parameters.push_back(param->getNameAsString());
+            }
+            
+            num = astMethodDecl->getNumParams();
+        }
         
         MethodDeclNode(const MethodDeclNode& refnode)
         : astMethodDecl(refnode.astMethodDecl),
-        strName(refnode.strName)
+        strName(refnode.strName),
+        num(refnode.num),
+        parameters(refnode.parameters)
         {}
         
         void print() const
         {
-            std::cout<<"Method: "<<strName;
+            std::cout<<"Method: "<<strName<<"["<<num<<"] ";
             
-            for(CXXMethodDecl::param_iterator it = astMethodDecl->param_begin() ;
-                it != astMethodDecl->param_end() ; ++it)
+            for(std::string param : parameters)
             {
-                if(!*it)
-                    continue;
-                std::cout<<(*it)->getNameAsString()<<",";
+                std::cout<<param<<",";
             }
             
             std::cout<<"\n";
@@ -91,6 +99,8 @@ namespace stig
         
         CXXMethodDecl* astMethodDecl;
         std::string strName;
+        int num;
+        std::vector<std::string> parameters;
     };
     
     class RecordDeclNode

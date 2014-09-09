@@ -1,7 +1,7 @@
 
 
-#include <iostream>
-#include "ActionHolder.hpp"
+//#include <iostream>
+//#include "ActionHolder.hpp"
 
 class Object
 {
@@ -29,9 +29,9 @@ namespace ck
         
         virtual State perform() = 0;
         
-        virtual void testFunc();
+        virtual void testFunc(int t_);
         
-        void test();
+        void test(float x, float y);
         
 	};
 }

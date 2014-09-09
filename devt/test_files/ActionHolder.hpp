@@ -1,14 +1,13 @@
 
-#include <vector>
+//#include <vector>
 
 struct ActionHolder
 {
     int a;
-    std::vector<int> vect;
 };
 
 
-struct TestHVect : public std::vector<float>
+struct TestHVect /* : public std::vector<float>*/
 {
-    
+ 	float testEEE(const int& c_);
 };
