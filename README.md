@@ -1,4 +1,4 @@
-STI
-===
+STIG
+====
 
-Static Type Info - A C++ Static Reflexion Library
+Static Type Info Generator - A C++ Static Reflexion Tool based on Clang
