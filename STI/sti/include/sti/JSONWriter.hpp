@@ -11,58 +11,80 @@
 
 #include <sstream>
 
+#include "Serialization.hpp"
+
 namespace sti
 {
-        
     class JSONWriter
     {
     public:
         
-        void writeRecordDecl(std::ostringstream& stream, RecordDeclNode* rdecl_, int indent)
+        void writeSerializable(std::ostringstream& stream, SerialValue* val_, int indent)
         {
-            stream<<tabs(indent)<<"{\n";
-            
-            stream<<tabs(indent+1)<<"\"qtype\":\""<<rdecl_->strName<<"\",\n";
-            
-            stream<<tabs(indent+1)<<"\"context\":\""<<rdecl_->context<<"\",\n";
-            
-            // Print class fields
-            stream<<tabs(indent+1)<<"\"access\":\""<<access(rdecl_->access)<<"\",\n";
-            
-            // Print class fields
-            stream<<tabs(indent+1)<<"\"fields\":[\n";
-            
-            for(FieldDeclNode& field : rdecl_->m_fields[AccessSpecifier::AS_public])
+            switch (val_->type())
             {
-                writeFieldDecl(stream,&field,indent+2);
-                stream<<",";
+                case SerialValue::SV_string:
+                    writeString(stream,static_cast<StringSerialValue*>(val_),indent);
+                    break;
+                case SerialValue::SV_array:
+                    writeArray(stream, static_cast<ArraySerialValue*>(val_),indent);
+                    break;
+                case SerialValue::SV_dict:
+                    writeDict(stream,  static_cast<DictSerialValue*>(val_),indent);
+                    break;
+                case SerialValue::SV_data:
+                    writeData(stream,  static_cast<DataSerialValue*>(val_),indent);
+                    break;
+                default:
+                    throw std::exception();
+                    break;
             }
-            for(FieldDeclNode& field : rdecl_->m_fields[AS_protected])
-                writeFieldDecl(stream,&field,indent+2);
-            for(FieldDeclNode& field : rdecl_->m_fields[AS_private])
-                writeFieldDecl(stream,&field,indent+2);
-
-            stream<<tabs(indent+1)<<"],\n";
-            
-            // Print class methods
-            stream<<tabs(indent+1)<<"\"methods\":[\n";
-            //...
-            stream<<tabs(indent+1)<<"]\n";
-
-            stream<<tabs(indent)<<"}\n";
         }
         
-        void writeFieldDecl(std::ostringstream& stream, FieldDeclNode* fdecl_ , int indent)
+        void writeDict(std::ostringstream& stream, DictSerialValue* val_, int indent)
         {
-            stream<<tabs(indent)<<"{\n";
-            stream<<tabs(indent+1)<<"\"name\":\""<<fdecl_->strName<<"\",\n";
-            stream<<tabs(indent+1)<<"\"qtype\":\""<<fdecl_->strType<<"\"\n";
-            stream<<tabs(indent)<<"}\n";
+            typedef std::map<SerialKey,SerialValue*>::iterator Map_it;
+            
+            stream<<"{\n";
+            
+            for(Map_it it = val_->_dictValue.begin();
+                it != val_->_dictValue.end() ; ++it)
+            {
+                stream<<tabs(indent+1)<<"{\""<<it->first<<"\":";
+                
+                writeSerializable(stream,it->second,indent+1);
+                
+                stream<<"}";
+                
+                if(std::next(it) != val_->_dictValue.end())
+                    stream<<",";
+                
+                stream<<"\n";
+            }
+            
+            stream<<tabs(indent)<<"}";
         }
         
-        void writeMethodDecl(const std::ostringstream& stream, MethodDeclNode* mdecl_, int indent)
+        void writeArray(std::ostringstream& stream, ArraySerialValue* val_, int indent)
         {
+            stream<<"[\n";
+            for(std::vector<SerialValue*>::iterator it = val_->_arrayValue.begin();
+                it != val_->_arrayValue.end() ; ++it)
+            {
+                writeSerializable(stream,*it,indent+1);
+            }
             
+            stream<<"]";
+        }
+        
+        void writeString(std::ostringstream& stream, StringSerialValue* val_ , int indent)
+        {
+            stream<<"\""<<val_->_stringValue<<"\"";
+        }
+        
+        void writeData(std::ostringstream& stream, DataSerialValue* val_, int indent)
+        {
+            stream<<std::hex<<std::bitset<8>(val_->_dataValue,val_->_dataLength);
         }
     };
 }

@@ -20,7 +20,6 @@ namespace sti
         enum Type
         {
             SV_string,
-            SV_object,
             SV_array,
             SV_dict,
             SV_data,
@@ -65,13 +64,13 @@ namespace sti
         _dataLength(0)
         {}
         
-        DataSerialValue(void* data_ , int length_)
+        DataSerialValue(char* data_ , int length_)
         : SerialValue(SV_data),
         _dataValue(nullptr),
         _dataLength(0)
         {}
         
-        void* _dataValue;
+        char* _dataValue;
         unsigned _dataLength;
     };
 
