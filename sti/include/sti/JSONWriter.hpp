@@ -45,7 +45,10 @@ namespace sti
         {
             typedef std::map<SerialKey,SerialValue*>::iterator Map_it;
             
-            stream<<"{\n";
+            stream<<"{";
+            
+            if(val_->_dictValue.size() > 0)
+                stream<<"\n";
             
             for(Map_it it = val_->_dictValue.begin();
                 it != val_->_dictValue.end() ; ++it)
@@ -67,13 +70,24 @@ namespace sti
         
         void writeArray(std::ostringstream& stream, ArraySerialValue* val_, int indent)
         {
-            stream<<"[\n";
+            stream<<"[";
+            
+            if(val_->_arrayValue.size() > 0)
+                stream<<"\n";
+            
             for(std::vector<SerialValue*>::iterator it = val_->_arrayValue.begin();
                 it != val_->_arrayValue.end() ; ++it)
             {
+                stream<<tabs(indent+1);
                 writeSerializable(stream,*it,indent+1);
+                
+                if(std::next(it) != val_->_arrayValue.end())
+                    stream<<",";
+                
+                stream<<"\n";
             }
-            
+            if(val_->_arrayValue.size() > 0)
+                stream<<tabs(indent);
             stream<<"]";
         }
         
