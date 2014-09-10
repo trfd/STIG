@@ -1,9 +1,9 @@
 ///
 ///  DeclNode.hpp
-///  is part of STIG Project.
+///  is part of STI Library.
 ///
-///  Static Type Info Generator - A C++ Static Reflexion Tool based on Clang.
-///  Get more infos on STIG at <https://github.com/trfd/STIG>
+///  Static Type Info - A C++ Static Reflexion Library based on Clang.
+///  Get more infos on STIG at <https://github.com/trfd/STI>
 ///
 ///  Created by Baptiste Dupy on 08/09/2014.
 ///  Contact:
