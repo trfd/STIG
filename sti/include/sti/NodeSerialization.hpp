@@ -10,6 +10,7 @@
 #define STIG_NodeSerialization_hpp
 
 #include "Serialization.hpp"
+
 namespace sti
 {
     std::string tabs(int n_)
