@@ -41,16 +41,23 @@
 
 #include "llvm/Support/CommandLine.h"
 
-#include "DeclNode.hpp"
-#include "JSONWriter.hpp"
+#include <sti/DeclNode.hpp>
+
+#include <sti/JSONWriter.hpp>
+
+#include "stig/DeclNodeFactory.hpp"
 
 using namespace clang;
 using namespace clang::tooling;
 using namespace llvm;
 
+using namespace sti;
+
 namespace stig
 {
-    std::vector<RecordDeclNode> recordDecls;
+    std::vector<RecordDeclNode*> recordDecls;
+    
+    stig::DeclNodeFactory nodeFactory;
     
     class StigVisitor
     : public RecursiveASTVisitor<StigVisitor> {
@@ -67,7 +74,9 @@ namespace stig
             
             Declaration->dump();
             
-            recordDecls.emplace_back(Declaration);
+            //recordDecls.emplace_back(Declaration);
+            
+            recordDecls.push_back(static_cast<RecordDeclNode*>(nodeFactory.createProduct(DeclNode::DN_record,Declaration)));
             
             return true;
         }
@@ -107,14 +116,17 @@ int main(int argc,const char **argv)
     ClangTool Tool(OptionsParser.getCompilations(),
                    OptionsParser.getSourcePathList());
     
+    
+    stig::nodeFactory.registerAllCreator();
+    
     int result = Tool.run(newFrontendActionFactory<stig::StigAction>().get());
     
-    stig::JSONWriter writer;
+    sti::JSONWriter writer;
     std::ostringstream strStream;
 
-    for(stig::RecordDeclNode& decl : stig::recordDecls)
+    for(sti::RecordDeclNode* decl : stig::recordDecls)
     {
-        writer.writeRecordDecl(strStream, &decl, 0);
+        writer.writeRecordDecl(strStream, decl, 0);
     }
     
     std::cout<<strStream.str()<<"\n";
