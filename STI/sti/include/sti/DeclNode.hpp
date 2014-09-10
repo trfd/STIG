@@ -40,46 +40,62 @@
 
 using namespace clang;
 
-namespace stig
+namespace sti
 {
+    struct DeclNode
+    {
+        enum Type
+        {
+            DN_unknown,
+            DN_field,
+            DN_method,
+            DN_record
+        };
+        
+        DeclNode()
+        : m_type(DN_unknown)
+        {}
+        
+        DeclNode(const Type& t_)
+        : m_type(t_)
+        {}
+    
+        inline Type type(){ return m_type; }
+        
+    private:
+        
+        Type m_type;
+    };
+    
     class RecordDeclNode;
     
-    struct FieldDeclNode
+    struct FieldDeclNode : public DeclNode
     {
-        FieldDeclNode(FieldDecl* astdecl)
-        : _name(static_cast<const NamedDecl*>(astdecl)->getNameAsString()),
-        _type(astdecl->getType().getAsString())
+        FieldDeclNode()
+        : DeclNode(DN_field)
         {}
         
         std::string _name;
         std::string _type;
     };
     
-    struct MethodDeclNode
+    struct MethodDeclNode : public DeclNode
     {        
         MethodDeclNode(CXXMethodDecl* astdecl)
-        : _name(static_cast<const NamedDecl*>(astdecl)->getNameAsString())
-        {
-            for(ParmVarDecl* param : astdecl->parameters())
-            {
-                if(!param)
-                    continue;
-                _params.push_back(param->getNameAsString());
-            }
-        }
+        : DeclNode(DN_method)
+        {}
 
         std::string _name;
         std::vector<std::string> _params;
     };
     
-    class RecordDeclNode
+    class RecordDeclNode : public DeclNode
     {
     public:
         
         RecordDeclNode(CXXRecordDecl* astptr)
-        {
-            extractFields(astptr);
-        }
+        : DeclNode(DN_record)
+        {}
         
         void extractFields(CXXRecordDecl* astptr)
         {
