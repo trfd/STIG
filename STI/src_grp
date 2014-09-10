@@ -11,7 +11,8 @@ Dir.chdir(cmake_wd)
 
 puts "Working Directory: #{cmake_wd}"
 
-src_dir = "stig"
+
+src_dir = "sti";
 
 ## File writing location
 ##cmake_cfg = File.new("cmake_config/src_group.cmake")

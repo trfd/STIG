@@ -8,16 +8,16 @@
 
 // Root directory of the Cytok Project (absolute)
 // (Dev Only)
-#define STIG_PROJECT_ROOT_DIR ""
+#define STIG_PROJECT_ROOT_DIR "@SG_ROOT_DIR@"
 
 // Location of the libraries in the Cytok Project (absolute)
 // (Dev only)
-#define STIG_LIB_DIR ""
+#define STIG_LIB_DIR "@SG_LIB_DIR@"
 
 // Location of the header in the Cytok Project (absolute)
 // (Dev Only)
-#define STIG_INCLUDE_DIR ""
+#define STIG_INCLUDE_DIR "@SG_INC_DIR@"
 
 // Location of the dev test directory in the Cytok Project (absolute)
 // (Dev Only)
-#define STIG_DEV_TEST_DIR ""
+#define STIG_DEV_TEST_DIR "@SG_DEVT_DIR@"
