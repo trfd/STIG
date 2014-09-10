@@ -26,22 +26,25 @@ namespace stig
         static DeclNode* createField(clang::Decl* field)
         {
             if(field->getKind() != Decl::Field)
-                return nullptr;
+                throw std::exception();
             
             clang::FieldDecl* fieldDecl = static_cast<clang::FieldDecl*>(field);
             
             FieldDeclNode* node = new FieldDeclNode();
             
             node->_name = fieldDecl->getNameAsString();
-            node->_type = fieldDecl->getType()->getAsString();
+            node->_type = fieldDecl->getType().getAsString();
             
             return node;
         }
         
         static DeclNode* createMethod(clang::Decl* method)
         {
-            if(method->getKind() != Decl::CXXMethod)
-                return nullptr;
+            if(method->getKind() != Decl::CXXMethod      &&
+               method->getKind() != Decl::CXXDestructor  &&
+               method->getKind() != Decl::CXXConstructor &&
+               method->getKind() != Decl::CXXConversion)
+                throw std::exception();
             
             clang::CXXMethodDecl* methDecl = static_cast<clang::CXXMethodDecl*>(method);
             
@@ -54,31 +57,31 @@ namespace stig
         
         static DeclNode* createRecord(clang::Decl* record)
         {
-            if(field->getKind() != Decl::CXXRecord)
-                return nullptr;
+            if(record->getKind() != Decl::CXXRecord)
+                throw std::exception();
             
             clang::CXXRecordDecl* recordDecl = static_cast<clang::CXXRecordDecl*>(record);
             
             RecordDeclNode* node = new RecordDeclNode();
             
-            node->_name = node->getNameAsString();
+            node->_name = recordDecl->getNameAsString();
             
-            _access = recordDecl->getAccess();
+            node->_access = recordDecl->getAccess();
             
             /// Retrieve methods
             for(CXXRecordDecl::method_iterator it = recordDecl->method_begin() ;
                 it != recordDecl->method_end() ; ++it)
             {
-                node->_methods.emplace_back(*it);
+                node->_methods.push_back(static_cast<MethodDeclNode*>(createMethod(*it)));
             }
             
             /// Retrieve fields
-            for(DeclContext::decl_iterator it =r ecordDecl->decls_begin() ;
+            for(DeclContext::decl_iterator it = recordDecl->decls_begin() ;
                 it != recordDecl->decls_end() ; ++it)
             {
                 if(it->getKind() == Decl::Kind::Field)
                 {
-                    node->_fields.emplace_back(static_cast<FieldDecl*>(*it));
+                    node->_fields.push_back(static_cast<FieldDeclNode*>(createField(static_cast<FieldDecl*>(*it))));
                 }
             }
             

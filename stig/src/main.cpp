@@ -126,7 +126,7 @@ int main(int argc,const char **argv)
 
     for(sti::RecordDeclNode* decl : stig::recordDecls)
     {
-        writer.writeRecordDecl(strStream, decl, 0);
+        writer.writeDict(strStream, serialize(decl), 0);
     }
     
     std::cout<<strStream.str()<<"\n";
