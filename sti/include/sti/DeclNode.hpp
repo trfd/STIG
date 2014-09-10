@@ -81,7 +81,7 @@ namespace sti
     
     struct MethodDeclNode : public DeclNode
     {        
-        MethodDeclNode(CXXMethodDecl* astdecl)
+        MethodDeclNode()
         : DeclNode(DN_method)
         {}
 
@@ -93,56 +93,9 @@ namespace sti
     {
     public:
         
-        RecordDeclNode(CXXRecordDecl* astptr)
+        RecordDeclNode()
         : DeclNode(DN_record)
         {}
-        
-        void extractFields(CXXRecordDecl* astptr)
-        {
-            _name =static_cast<const NamedDecl*>(astptr)->getNameAsString();
-            
-            _access = astptr->getAccess();
-            
-            for(CXXRecordDecl::method_iterator it = astptr->method_begin() ;
-                it != astptr->method_end() ; ++it)
-            {
-                _methods.emplace_back(*it);
-            }
-            
-            for(DeclContext::decl_iterator it = static_cast<DeclContext*>(astptr)->decls_begin() ;
-                it != static_cast<DeclContext*>(astptr)->decls_end() ; ++it)
-            {
-                if(it->getKind() == Decl::Kind::Field)
-                {
-                    _fields.emplace_back(static_cast<FieldDecl*>(*it));
-                }
-            }
-            
-            extractContext(astptr);
-        }
-        
-        void extractContext(CXXRecordDecl* astptr)
-        {
-            _context = "";
-            
-            DeclContext* dclCtx = astptr->getDeclContext();
-            
-            do
-            {
-                
-                if(dclCtx->isNamespace())
-                {
-                    _context = static_cast<NamespaceDecl*>(dclCtx)->getNameAsString() + "::" + _context;
-                }
-                else if(dclCtx->isRecord())
-                {
-                   _context = static_cast<CXXRecordDecl*>(dclCtx)->getNameAsString() + "::" + _context;
-                }
-                
-                dclCtx = dclCtx->getParent();
-
-            }while(dclCtx);
-        }
         
         AccessSpecifier _access;
         
@@ -150,9 +103,9 @@ namespace sti
         
         std::string _context;
         
-        std::vector<FieldDeclNode> _fields;
+        std::vector<FieldDeclNode*> _fields;
         
-        std::vector<MethodDeclNode> _methods;
+        std::vector<MethodDeclNode*> _methods;
     };
 }
 

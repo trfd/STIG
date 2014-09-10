@@ -37,11 +37,46 @@ namespace sti
         }
     }
     
-    DictSerialValue serialize(RecordDeclNode* node)
+   
+    DictSerialValue* serialize(FieldDeclNode* node)
     {
-        DictSerialValue dict;
+        DictSerialValue* dict = new DictSerialValue();
+
+        dict->_dictValue["name"] = new StringSerialValue(node->_name);
+        dict->_dictValue["type"] = new StringSerialValue(node->_type);
         
-        dict._dictValue["access"] = new StringSerialValue(access(node->_access));
+        return dict;
+    }
+    
+    DictSerialValue* serialize(MethodDeclNode* node)
+    {
+        DictSerialValue* dict = new DictSerialValue();
+        
+        dict->_dictValue["name"] = new StringSerialValue(node->_name);
+        //dict._dictValue["type"] = new StringSerialValue(node->_type);
+        
+        return dict;
+    }
+    
+    DictSerialValue* serialize(RecordDeclNode* node)
+    {
+        DictSerialValue* dict = new DictSerialValue();
+        
+        dict->_dictValue["access"] = new StringSerialValue(access(node->_access));
+        dict->_dictValue["name"]   = new StringSerialValue(node->_name);
+        dict->_dictValue["context"]= new StringSerialValue(node->_context);
+        
+        ArraySerialValue* arrFields = new ArraySerialValue();
+        for(FieldDeclNode* field : node->_fields)
+            arrFields->_arrayValue.push_back(serialize(field));
+        
+        dict->_dictValue["fields"] = arrFields;
+        
+        ArraySerialValue* arrMethods = new ArraySerialValue();
+        for(MethodDeclNode* method : node->_methods)
+            arrMethods->_arrayValue.push_back(serialize(method));
+        
+        dict->_dictValue["methods"] = arrMethods;
         
         return dict;
     }
