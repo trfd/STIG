@@ -11,14 +11,12 @@
 
 #include <sstream>
 
-namespace stig
+namespace sti
 {
         
     class JSONWriter
     {
     public:
-        
-        
         
         void writeRecordDecl(std::ostringstream& stream, RecordDeclNode* rdecl_, int indent)
         {

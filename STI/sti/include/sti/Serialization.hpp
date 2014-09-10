@@ -9,7 +9,7 @@
 #ifndef STIG_Serialization_hpp
 #define STIG_Serialization_hpp
 
-namespace stig
+namespace sti
 {
     typedef std::string SerialKey;
 
