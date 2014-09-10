@@ -16,9 +16,9 @@ ENDFUNCTION()
 ### OS (Name.lib / libName.a)
 MACRO(static_lib_name _name)
 	IF(WIN32)
-		SET(${_name}_STATIC_LIB_NAME ${name}.lib)
+		SET(${_name}_STATIC_LIB_NAME ${_name}.lib)
 	ELSE()
-		SET(${_name}_STATIC_LIB_NAME lib${name}.a)
+		SET(${_name}_STATIC_LIB_NAME lib${_name}.a)
 	ENDIF()
 ENDMACRO(static_lib_name)
 
@@ -28,11 +28,11 @@ ENDMACRO(static_lib_name)
 ### OS (Name.dll / libName.dylib / libName.so)
 MACRO(dynamic_lib_name _name)
 	IF(WIN32)
-		SET(${_name}_DYNAMIC_LIB_NAME ${name}.dll)
+		SET(${_name}_DYNAMIC_LIB_NAME ${_name}.dll)
 	ELSEIF(APPLE)
-		SET(${_name}_DYNAMIC_LIB_NAME lib${name}.dylib)
+		SET(${_name}_DYNAMIC_LIB_NAME lib${_name}.dylib)
 	ELSE()
-		SET(${_name}_DYNAMIC_LIB_NAME lib${name}.so)
+		SET(${_name}_DYNAMIC_LIB_NAME lib${_name}.so)
 	ENDIF()
 ENDMACRO(dynamic_lib_name)
 
@@ -171,6 +171,10 @@ MACRO(cmext_add_library _name _libType)
 		MESSAGE("WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
 	ENDIF()
 
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY         ${LIB_DIR})
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG   ${LIB_DIR})
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_DIR})
+
 ENDMACRO(cmext_add_library)
 
 ### Add an executable target to a module and link to libs.
@@ -198,6 +202,10 @@ MACRO(cmext_add_executable _name)
 	ELSE()
 		MESSAGE("WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
 	ENDIF()
+
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY         ${BIN_DIR})
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${BIN_DIR})
+	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR})
 
 ENDMACRO(cmext_add_executable)
 
