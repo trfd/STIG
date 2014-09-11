@@ -32,13 +32,7 @@
 
 #include <iostream>
 
-#include <clang/AST/DeclCXX.h>
-#include <clang/Basic/Specifiers.h>
-
 #include "Serialization.hpp"
-
-
-using namespace clang;
 
 namespace sti
 {
@@ -50,6 +44,15 @@ namespace sti
             DN_field,
             DN_method,
             DN_record
+        };
+        
+        enum Access
+        {
+            access_none,
+            
+            access_public,
+            access_protected,
+            access_private
         };
         
         DeclNode()
@@ -97,7 +100,7 @@ namespace sti
         : DeclNode(DN_record)
         {}
         
-        AccessSpecifier _access;
+        Access _access;
         
         std::string _name;
         
@@ -108,7 +111,5 @@ namespace sti
         std::vector<MethodDeclNode*> _methods;
     };
 }
-
-#include "NodeSerialization.hpp"
 
 #endif
