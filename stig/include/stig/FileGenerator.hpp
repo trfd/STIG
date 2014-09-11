@@ -144,7 +144,7 @@ namespace stig
                 }
             }
             
-            return line;
+            return out_line.str();
         }
         
         virtual std::string processReplacement(const std::string::const_iterator& begin,
@@ -152,7 +152,7 @@ namespace stig
         {
             m_currentReport.context = "FileGenerator::processReplacement";
             
-            std::string var(begin+1, end-1);
+            std::string var(begin+1, end);
             
             if(var == "")
                 return var;
@@ -174,7 +174,7 @@ namespace stig
             // This will look for keys into m_rootDict
             for(int idx = 0 ; idx < keys.size() ; idx++)
             {
-                if(idx != keys.size()-1 && currValue->type() == SerialValue::SV_dict)
+                if(currValue->type() == SerialValue::SV_dict)
                 {
                     // Current node of serialization tree is a dictionary
                     // Then next current key must be a key of the dict's key-value map
@@ -193,7 +193,7 @@ namespace stig
                     // New node in serialization tree
                     currValue = valIt->second;
                 }
-                else if(idx != keys.size()-1 && currValue->type() == SerialValue::SV_array)
+                else if(currValue->type() == SerialValue::SV_array)
                 {
                     // Current node of serialization tree is an array
                     // Then next current key must be an index of the array
@@ -222,19 +222,48 @@ namespace stig
                         return var;
                     }
                 }
-                // Key doesn't lead to a branch node (dict or array) in serialization tree
-                // Only final key can be a leaf node.
-                else if(idx == keys.size()-1 && currValue->type() == SerialValue::SV_string)
-                {
-                    return static_cast<StringSerialValue*>(currValue)->_stringValue;
-                }
                 else
                 {
-                    m_currentReport.report("Invalid type of key \""+keys[idx]+"\" in variable \""+var+"\"");
+                    // Key doesn't lead to a branch node (dict or array) in serialization tree
+                    std::string expType = "SV_dict or SV_array";
+                    
+                    m_currentReport.report("Invalid type of key \""+keys[idx]+"\" in variable \""+var+
+                                           "\". Type expected: "+expType+" Value's type: "+
+                                           serialType(currValue->type()));
+
                     return var;
                 }
             }
+            
+            // Only final key can be a leaf node.
+            
+            if(currValue->type() == SerialValue::SV_string)
+            {
+                return static_cast<StringSerialValue*>(currValue)->_stringValue;
+            }
+            else
+            {
+                // Key doesn't lead to a branch node (dict or array) in serialization tree
+                std::string expType = "SV_string";
                 
+                m_currentReport.report("Invalid value type for last key in variable \""+var+
+                                       "\". Type expected: "+expType+" Value's type: "+
+                                       serialType(currValue->type()));
+                
+                return var;
+            }
+
+            
+        }
+        
+        void setRootDictValue(DictSerialValue* dict_)
+        {
+            m_rootDict = dict_;
+        }
+        
+        DictSerialValue* rootDictValue()
+        {
+            return m_rootDict;
         }
         
     private:

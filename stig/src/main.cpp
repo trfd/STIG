@@ -30,6 +30,8 @@
 #define __STDC_LIMIT_MACROS
 #define __STDC_CONSTANT_MACROS
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include "clang/Tooling/CommonOptionsParser.h"
 
 #include "clang/AST/ASTConsumer.h"
@@ -46,7 +48,7 @@
 #include <sti/NodeSerialization.hpp>
 
 #include "stig/DeclNodeFactory.hpp"
-#include "stig/FileGenerator.hpp"
+#include "stig/Generators.hpp"
 
 using namespace clang;
 using namespace clang::tooling;
@@ -124,18 +126,24 @@ int main(int argc,const char **argv)
     sti::JSONWriter writer;
     std::ostringstream strStream;
 
+    stig::ClassInfoGenerator fgen;
+    
     for(sti::RecordDeclNode* decl : stig::recordDecls)
     {
         writer.writeDict(strStream, sti::serialize(decl), 0);
         strStream<<"\n";
+        
+        fgen.setRecordDecl(decl);
+        
+        std::string fullname = decl->_context + decl->_name;
+        
+        boost::replace_all(fullname, "::" , "_");
+        
+        fgen.processTemplate("/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.sting",
+                             "/Users/Baba/dev/trfd/STIG/devt/test_files/sti_"+fullname+".cpp");
     }
     
     std::cout<<strStream.str()<<"\n";
-    
-    stig::FileGenerator fgen;
-    
-    fgen.processTemplate("/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.sting",
-                         "/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.cpp");
-    
+
     return result;
 }
