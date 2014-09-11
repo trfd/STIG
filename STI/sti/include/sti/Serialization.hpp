@@ -66,6 +66,19 @@ namespace sti
         Type _type;
     };
     
+    std::string serialType(const SerialValue::Type& t_)
+    {
+        switch(t_)
+        {
+            case SerialValue::SV_string : return "SV_string";
+            case SerialValue::SV_array  : return "SV_array";
+            case SerialValue::SV_dict   : return "SV_dict";
+            case SerialValue::SV_data   : return "SV_data";
+            case SerialValue::SV_unknown:
+            default:         return "SV_unknown";
+        }
+    }
+    
     struct StringSerialValue : public SerialValue
     {
         StringSerialValue()
