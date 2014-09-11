@@ -147,16 +147,21 @@ namespace stig
             return out_line.str();
         }
         
-        virtual std::string processReplacement(const std::string::const_iterator& begin,
-                                               const std::string::const_iterator& end)
+        virtual std::string processScript(const std::string::const_iterator& begin,
+                                          const std::string::const_iterator& end)
         {
             m_currentReport.context = "FileGenerator::processReplacement";
             
-            std::string var(begin+1, end);
+            std::string script(begin+1, end);
             
-            if(var == "")
-                return var;
+            if(script == "")
+                return script;
             
+            return processScript(script);
+        }
+        
+        virtual std::string processScript(const std::string& script)
+        {
             typedef std::vector<std::string> KeyList;
             
             // Support succession of keys: "record:template:parameters:0"
@@ -252,8 +257,6 @@ namespace stig
                 
                 return var;
             }
-
-            
         }
         
         void setRootDictValue(DictSerialValue* dict_)
@@ -267,8 +270,6 @@ namespace stig
         }
         
     private:
-        
-        DictSerialValue* m_rootDict = nullptr;
         
         ErrorReport m_currentReport;
     };
