@@ -30,10 +30,14 @@
 #ifndef STIG_DeclNodeFactory_hpp
 #define STIG_DeclNodeFactory_hpp
 
-#include "UniFactory.hpp"
+#include <clang/AST/Decl.h>
+#include <clang/AST/DeclCXX.h>
 
 #include <sti/DeclNode.hpp>
 
+#include "UniFactory.hpp"
+
+using namespace clang;
 using namespace sti;
 
 namespace stig
@@ -87,7 +91,7 @@ namespace stig
             
             node->_name = recordDecl->getNameAsString();
             
-            node->_access = recordDecl->getAccess();
+            node->_access = (DeclNode::Access) recordDecl->getAccess();
             
             /// Retrieve methods
             for(CXXRecordDecl::method_iterator it = recordDecl->method_begin() ;
