@@ -4,6 +4,21 @@ ELSE()
 	SET(CMEXT_INCLUDED "true")
 ENDIF()
 
+FUNCTION(cmext_find_lib _libname _directory)
+	SET(tmp_files)
+	FILE(GLOB_RECURSE 
+		 tmp_files
+		 ${_directory}
+		 "(lib)?(boost_test).*\.(so|dylib|lib|a|dll)$"
+		 )
+
+	IF(tmp_files)
+		
+	ELSE()
+		MESSAGE("Library ${_libname} not found at ${_directory}")
+	ENDIF()
+
+ENDFUNCTION(cmext_find_lib)
 
 FUNCTION(print_files _files)
 	FOREACH(file ${_files})

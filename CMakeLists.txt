@@ -30,9 +30,11 @@ PROJECT(STIG)
 ## Libraries
 ###
 
-FIND_PACKAGE( Boost REQUIRED )
+FIND_PACKAGE( Boost COMPONENTS system filesystem REQUIRED )
 
 INCLUDE(${CMAKE_SOURCE_DIR}/ClangTool.cmake)
+
+MESSAGE("Boost libraries: ${Boost_LIBRARIES}")
 
 ###
 ## Compilation Flags
@@ -85,7 +87,9 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR})
 
 CMEXT_REQUIRE(Clang_INCLUDE_DIRS "STIG requires Clang_INCLUDE_DIRS")
 
-SET(INCLUDE_DIRS ${Clang_INCLUDE_DIRS})
+SET(INCLUDE_DIRS 
+	${Boost_INCLUDE_DIRS}
+	${Clang_INCLUDE_DIRS})
 
 ###
 ## Modules
