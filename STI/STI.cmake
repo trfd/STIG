@@ -1,6 +1,7 @@
 
 CMEXT_REQUIRE(Clang_LIBRARIES   "STI requires Clang_LIBRARIES")
 CMEXT_REQUIRE(CAttrib_LIBRARIES "STI requires CAttrib_LIBRARIES")
+CMEXT_REQUIRE(Boost_FOUND   "STI requires Boost_FOUND")
 
 CMEXT_ADD_FILE_DIR(STI sti/include)
 CMEXT_ADD_FILE_DIR(STI sti/src)
@@ -9,6 +10,7 @@ CMEXT_ADD_FILE_DIR(STI sti/src)
 SET(STI_LINK_LIBS 
 	${Clang_LIBRARIES}
 	${CAttrib_LIBRARIES}
+	${Boost_LIBRARIES}
 	)
 	
 
