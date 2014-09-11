@@ -1,0 +1,14 @@
+
+#include <sti/StaticType.hpp>
+
+template<>
+struct StaticType<@record:name@> 
+{
+	typedef @record:name@ Type;
+
+	static const uint32_t hash = ck::hash<32>::get("@record:context@@record:name@");
+
+	static const std::string fullname = "@record:context@@record:name@";
+
+	static const std::string name = "@record:name@";
+};
