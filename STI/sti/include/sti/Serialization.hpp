@@ -30,6 +30,10 @@
 #ifndef STIG_Serialization_hpp
 #define STIG_Serialization_hpp
 
+#include <string>
+#include <vector>
+#include <map>
+
 namespace sti
 {
     typedef std::string SerialKey;
@@ -106,6 +110,9 @@ namespace sti
     
     struct DictSerialValue : public SerialValue
     {
+        
+        typedef std::map<SerialKey,SerialValue*> KeyValueMap;
+        typedef KeyValueMap::iterator KeyValueMap_it;
         DictSerialValue()
         : SerialValue(SV_dict)
         {}

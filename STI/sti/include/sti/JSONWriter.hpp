@@ -36,6 +36,14 @@
 
 namespace sti
 {
+    std::string tabs(int n_)
+    {
+        std::string result = "";
+        for(int i=0 ; i<n_ ; i++)
+            result += "\t";
+        return result;
+    }
+    
     class JSONWriter
     {
     public:

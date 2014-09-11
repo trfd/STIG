@@ -34,25 +34,18 @@
 
 namespace sti
 {
-    std::string tabs(int n_)
-    {
-        std::string result = "";
-        for(int i=0 ; i<n_ ; i++)
-            result += "\t";
-        return result;
-    }
     
-    std::string access(const clang::AccessSpecifier& acc_)
+    std::string access(const DeclNode::Access& acc_)
     {
         switch(acc_)
         {
-            case AS_public:
+            case DeclNode::access_public:
                 return "public";
-            case AS_protected:
+            case DeclNode::access_protected:
                 return "protected";
-            case AS_private:
+            case DeclNode::access_private:
                 return "private";
-            case AS_none:
+            case DeclNode::access_none:
             default:
                 return "none";
         }
