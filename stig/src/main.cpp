@@ -42,10 +42,11 @@
 #include "llvm/Support/CommandLine.h"
 
 #include <sti/DeclNode.hpp>
-
 #include <sti/JSONWriter.hpp>
+#include <sti/NodeSerialization.hpp>
 
 #include "stig/DeclNodeFactory.hpp"
+#include "stig/FileGenerator.hpp"
 
 using namespace clang;
 using namespace clang::tooling;
@@ -74,9 +75,8 @@ namespace stig
             
             Declaration->dump();
             
-            //recordDecls.emplace_back(Declaration);
-            
-            recordDecls.push_back(static_cast<RecordDeclNode*>(nodeFactory.createProduct(DeclNode::DN_record,Declaration)));
+            recordDecls.push_back(static_cast<RecordDeclNode*>(
+                        nodeFactory.createProduct(DeclNode::DN_record,Declaration)));
             
             return true;
         }
@@ -126,11 +126,16 @@ int main(int argc,const char **argv)
 
     for(sti::RecordDeclNode* decl : stig::recordDecls)
     {
-        writer.writeDict(strStream, serialize(decl), 0);
+        writer.writeDict(strStream, sti::serialize(decl), 0);
         strStream<<"\n";
     }
     
     std::cout<<strStream.str()<<"\n";
+    
+    stig::FileGenerator fgen;
+    
+    fgen.processTemplate("/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.sting",
+                         "/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.cpp");
     
     return result;
 }
