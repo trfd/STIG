@@ -43,5 +43,5 @@ SWIG_LINK_LIBRARIES(Module3 ${RUBY_LIBRARY})
 
 
 ADD_CUSTOM_TARGET(RunSWIG
-    COMMAND ${SWIG_EXECUTABLE} -c++ -ruby ${STIG_ROOT_DIR_GLOBAL}/stig/include/stig/Module3.swg
+    COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -o ${STIG_ROOT_DIR_GLOBAL}/stig/src/swig/Module3.cpp ${STIG_ROOT_DIR_GLOBAL}/stig/include/stig/Module3.swg 
 )
