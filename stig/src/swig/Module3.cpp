@@ -1902,7 +1902,7 @@ SWIG_From_int  (int value)
 }
 
 
-#include "../../include/stig/CXXModule3.h"
+#include "CXXModule3.h"
 
 static swig_class SwigClassMyTestClass;
 
@@ -2337,5 +2337,4 @@ SWIGEXPORT void Init_Module3(void) {
   SwigClassMyTestClass.destroy = (void (*)(void *)) free_MyTestClass;
   SwigClassMyTestClass.trackObjects = 0;
 }
-
 
