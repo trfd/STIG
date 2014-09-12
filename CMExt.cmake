@@ -102,7 +102,7 @@ MACRO(cmext_add_module _name)
 		IF(${_name}_INCLUDE_DIR)
 			SET(INCLUDE_DIRS ${INCLUDE_DIRS} ${${_name}_INCLUDE_DIR})
 		ELSE()
-			MESSAGE(FATAL_ERROR "Module ${_name} does not define ${_name}_INCLUDE_DIR")
+			MESSAGE("***WARNING: Module ${_name} does not define ${_name}_INCLUDE_DIR")
 		ENDIF()
 
   		SET_PROPERTY(TARGET ${_name}
@@ -123,18 +123,22 @@ ENDMACRO(cmext_add_module)
 ### Apply Source Grouping to a module _name
 MACRO(cmext_source_group _name)
 
-	MESSAGE("Test: ${_name} : ${${_name}_ROOT_DIR_GLOBAL}")
+	SET(_SRC_GRP_OUT_FILE ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group_${_name}.cmake)
 
 	IF(EXISTS ${${_name}_ROOT_DIR_GLOBAL}/src_grp)
-		MESSAGE(" | Start source grouping for module ${_name}")
-		EXECUTE_PROCESS(COMMAND "${${_name}_ROOT_DIR_GLOBAL}/src_grp ")
+		MESSAGE("=====================================================")
+		MESSAGE(" | Command: ")
+		EXECUTE_PROCESS(
+			COMMAND ${${_name}_ROOT_DIR_GLOBAL}/src_grp ${_name} ${_SRC_GRP_OUT_FILE}
+			)
+		MESSAGE("=====================================================")
 	ENDIF()
 	
-	IF(EXISTS ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group.cmake)
-		INCLUDE(${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group.cmake)
-		MESSAGE("Apply source grouping with file found at ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group.cmake")
+	IF(EXISTS ${_SRC_GRP_OUT_FILE})
+		INCLUDE(${_SRC_GRP_OUT_FILE})
+		MESSAGE("Apply source grouping with file found at ${_SRC_GRP_OUT_FILE}")
 	ELSE()
-		MESSAGE("WARNING: No source grouping file found at ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group.cmake")
+		MESSAGE("***WARNING: No source grouping file found at ${_SRC_GRP_OUT_FILE}")
 	ENDIF()
 ENDMACRO(cmext_source_group)
 
@@ -183,7 +187,7 @@ MACRO(cmext_add_library _name _libType)
 		)
 
 	ELSE()
-		MESSAGE("WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
+		MESSAGE("***WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
 	ENDIF()
 
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY         ${LIB_DIR})
@@ -215,7 +219,7 @@ MACRO(cmext_add_executable _name)
 		)
 
 	ELSE()
-		MESSAGE("WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
+		MESSAGE("***WARNING: No library linked to ${_name} ( variable ${_name}_LINK_LIBS is not set)")
 	ENDIF()
 
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY         ${BIN_DIR})

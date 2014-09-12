@@ -2,7 +2,18 @@
 
 require 'pathname'
 
+if(ARGV.length == 0)
+	puts "src_grp: Require at least one argument for source folder"
+	Kernel.exit(false)
+end
+
+src_dir = ARGV[0]
+
+puts "Run source grouping for #{src_dir}"
+
 old_wd = Pathname.new( Dir.pwd )
+
+puts "Save Working Director = #{old_wd}"
 
 ## CMake Working Directory
 cmake_wd = File.dirname(__FILE__)
@@ -11,15 +22,20 @@ Dir.chdir(cmake_wd)
 
 puts "Working Directory: #{cmake_wd}"
 
-src_dir = "stig"
-
 ## File writing location
 ##cmake_cfg = File.new("cmake_config/src_group.cmake")
 
-File.open("cmake_config/src_group.cmake", 'w') {}
+output_file = "src_group.cmake"
 
+if(ARGV.length > 1)
+	output_file = ARGV[1]
+end
 
-def write_conf(dir)
+File.open(output_file, 'w') {}
+
+puts "Write configuration file: #{output_file}"
+
+def write_conf(dir,out_f)
 
   	tmp = dir.to_s.gsub(/\/$/ ,'')
 
@@ -29,9 +45,10 @@ def write_conf(dir)
 
   	puts sol_p
 
-	open("cmake_config/src_group.cmake", 'a') { |f|
+	open(out_f, 'a') { |f|
   		f.puts "FILE(GLOB #{var_n} ${SOURCE_GROUP_PREFIX}/#{dir}*)"
 		f.puts "SOURCE_GROUP(\"#{sol_p}\" FILES ${#{var_n}})"
+		f.puts ""
   	}
 
 end
@@ -58,7 +75,7 @@ while idx <= dir.length && parentIdx.length != 0 do
 		currDir = Pathname.new(dir.at(idx))
 		dir = Dir[currDir+'*/']
 		idx = 0
-		write_conf(currDir)
+		write_conf(currDir,output_file)
 	end
 end 
 
