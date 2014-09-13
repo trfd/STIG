@@ -115,13 +115,6 @@ ELSE()
 	SET(CAttrib_LIBRARIES   "" CACHE PATH "## STIG: Path of cAttrib lib: libcAttrib.a/cAttrib.lib")
 ENDIF()
 
-## Add Module CES
-IF(EXISTS ${CMAKE_SOURCE_DIR}/CES)
-	CMEXT_ADD_MODULE(CES PATH CES)
-ELSE()
-	SET(CES_INCLUDE_DIR "" CACHE PATH "## STIG: Root Directory containing headers of CES")
-	SET(CES_LIBRARIES   "" CACHE PATH "## STIG: Path of cAttrib lib: libCES.a/CES.lib")
-ENDIF()
 
 ## Add Module STI
 IF(EXISTS ${CMAKE_SOURCE_DIR}/STI)
@@ -134,6 +127,7 @@ ENDIF()
 
 ## Add Module STIG
 CMEXT_ADD_MODULE(STIG)
+CMEXT_ADD_MODULE(CES_DEV)
 
 #CMEXT_SOURCE_GROUP(STI)
 
