@@ -93,6 +93,8 @@ namespace ces
         kind(k_)
         {}
         
+        virtual ~Node(){}
+        
         /// <summary>
         /// Dump content of node.
         /// </summary>
@@ -155,6 +157,16 @@ namespace ces
         Node(t_,Node::Block)
         {}
         
+        virtual ~Block()
+        {
+            for (auto it = nodes.begin();
+                 it != nodes.end(); ++it)
+            {
+                delete *it;
+            }
+            nodes.clear();
+        }
+        
         /// <summary>
         /// Dump the chunks.
         /// </summary>
@@ -165,6 +177,42 @@ namespace ces
                 c->dump();
             std::cout<<"}\n";
         }
+        
+    };
+    
+    /// <summary>
+    /// Abstract Syntax Tree for CES
+    /// </summary>
+    class AST
+    {
+    public:
+        
+        /// <summary>
+        /// Sets the root of the AST.
+        /// </summary>
+        /// Previous root is destroyed.
+        inline void setRoot(Node* root_)
+        {
+            if(m_root)
+                delete m_root;
+            
+            m_root = root_;
+        }
+        
+        /// <summary>
+        /// Returns root of AST
+        /// </summary>
+        inline Node* root()
+        {
+            return m_root;
+        }
+        
+    private:
+        
+        /// <summary>
+        /// Root of AST.
+        /// </summary>
+        Node* m_root = nullptr;
     };
 }
 
