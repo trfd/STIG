@@ -34,14 +34,24 @@
 
 #include "ces/CES.hpp"
 #include "ces/LuaVM.hpp"
+#include "ces/Interpreter.hpp"
 
 int main(int argc,char* argv[])
 {
+    
+    ces::LuaVM vm;
+    
+    vm.open();
+    
     ces::Parser parser;
     
-    parser.parse("source1@[lua1]@source2@[lua2@out1@lua3]@source3@out2@source4");
+    parser.parse("Hello@[for i=1,5 do]@ @i@,@[end]@ World");
     
-    parser.dump();
+    ces::Interpreter inter;
+    
+    inter.interpret(&vm, parser.ast(), std::cout);
+    
+    std::cout<<"\n";
 
     return 0;
 }

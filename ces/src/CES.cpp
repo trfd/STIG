@@ -28,11 +28,13 @@
 
 #include "ces/CES.hpp"
 
+#include "ces/CESIO.hpp"
+
 namespace ces
 {
-    void out(const char* str_)
+    void out(unsigned sessionID, const char* str_)
     {
-        std::cout<<"[ces.out] "<<str_<<"\n";
+        IO::out(sessionID, str_);
     }
 }
 
