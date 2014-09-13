@@ -24,11 +24,16 @@ namespace stig
 {
     namespace ces
     {
-        
+        /// <summary>
+        /// Wrap Lua virtual machine call for simplified interface.
+        /// </summary>
         class LuaVM
         {
         public:
             
+            /// <summary>
+            /// Opens Lua VM and CES
+            /// </summary>
             inline void open()
             {
                 m_luaState = luaL_newstate();
@@ -36,11 +41,17 @@ namespace stig
                 luaopen_CES(m_luaState);
             }
             
+            /// <summary>
+            /// Closes VM.
+            /// </summary>
             inline void close()
             {
                 lua_close(m_luaState);
             }
             
+            /// <summary>
+            /// Run a lua script.
+            /// </summary>
             inline void runFile(const char* file_)
             {
                 if(luaL_loadfile(m_luaState,file_)==0) // load and run the file
@@ -49,6 +60,9 @@ namespace stig
                    std::cout<<"ERROR: Unable to load "<<file_<<"\n";
             }
             
+            /// <summary>
+            /// Run a chunk lua script.
+            /// </summary>
             inline void runChunk(const std::string& snippet)
             {
                 if(luaL_loadstring(m_luaState,snippet.c_str())==0) // load and run the file
@@ -59,6 +73,9 @@ namespace stig
             
         private:
             
+            /// <summary>
+            /// Current state of the Lua VM
+            /// </summary>
             lua_State *m_luaState;
         };
     }

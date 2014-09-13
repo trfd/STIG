@@ -13,6 +13,10 @@ namespace stig
 {
     namespace ces
     {
+        /// <summary>
+        /// Manage error and warning of parsing CES.
+        /// </summary>
+        //TODO: Add proper diagnostics of errors
         class Diagnostic
         {
         public:
@@ -28,8 +32,6 @@ namespace stig
             {
                 std::cout<<diag<<"\n";
             }
-            
-            inline void nextLine(){ m_line++; }
             
         private:
             
