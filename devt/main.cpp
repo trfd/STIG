@@ -32,19 +32,12 @@
 
 #include <iostream>
 
-#include "stig/ces/CES.hpp"
-#include "stig/ces/LuaVM.hpp"
+#include "ces/CES.hpp"
+#include "ces/LuaVM.hpp"
 
 int main(int argc,char* argv[])
 {
-    if (argc<2)
-    {
-        printf("%s: <filename.lua>\n",argv[0]);
-        return 0;
-    }
-
-    
-    stig::ces::Parser parser;
+    ces::Parser parser;
     
     parser.parse("source1@[lua1]@source2@[lua2@out1@lua3]@source3@out2@source4");
     
