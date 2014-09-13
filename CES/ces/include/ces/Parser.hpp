@@ -87,10 +87,9 @@ namespace ces
             Parser* parser;
             
             /// <summary>
-            /// Root AST node.
+            /// Abstract syntax tree
             /// </summary>
-            /// This must be a Block of source code.
-            Block rootBlock;
+            std::shared_ptr<AST> ast_ptr;
             
             /// <summary>
             /// Node being parsed.
@@ -118,7 +117,8 @@ namespace ces
             Grammar::SyntaxElement currentSyntaxElement = Grammar::None;
             
             ParsingState(Parser* p)
-            :parser(p)
+            :parser(p),
+             ast_ptr(std::make_shared<AST>())
             {}
             
             /// <summary>
@@ -223,7 +223,7 @@ namespace ces
             /// </summary>
             void dump()
             {
-                rootBlock.dump();
+                ast_ptr->root()->dump();
             }
         };
         
@@ -252,8 +252,9 @@ namespace ces
         /// </summary>
         void parse(const String_cit& from_, const String_cit& to_)
         {
-            m_state.rootBlock.type = Node::Source;
-            m_state.currentNode = &m_state.rootBlock;
+            m_state.ast_ptr->setRoot(new Block(Node::Source));
+
+            m_state.currentNode = m_state.ast_ptr->root();
             m_state.pushChunk(Node::Source);
             
             m_state.nodeStartPosition = from_;
