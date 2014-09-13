@@ -4,11 +4,10 @@ CES
 C++ Embedded Script - CES is used to write template file for code generation. 
 
 # Problem 
-Code generation tools are often needed, but writing such tools is not complex but mainting them 
-as the generation needs evolve is usually tedious. 
+Code generation tools are often needed in large projects, writing such tools is not complex but as the project grows and the generation needs evolve, mainting them becomes more and more tedious. 
 
 The solution of embedding script code into _source_ code simplifies both reading and maintainability of template files.
-CES is a simple library that parse template file with embedded Lua code generate files.
+CES is a simple library that parse template file with embedded Lua code and generate files.
 
 # Features
 
