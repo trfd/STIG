@@ -24,7 +24,7 @@ ENDIF()
 ## Project
 ###
 
-PROJECT(STIG)
+PROJECT(CES)
 
 ###
 ## Libraries
@@ -40,8 +40,6 @@ FIND_PACKAGE( Boost COMPONENTS system filesystem REQUIRED )
 FIND_PACKAGE(GTest REQUIRED)
 
 INCLUDE_DIRECTORIES()
-
-INCLUDE(${CMAKE_SOURCE_DIR}/ClangTool.cmake)
 
 MESSAGE("Boost libraries: ${Boost_LIBRARIES}")
 SET(CMAKE_SWIG_FLAGS "")
@@ -73,9 +71,6 @@ ENDIF()
 ## Configure Files
 ###
 
-CONFIGURE_FILE(cmake_config/dev_paths.hpp ${CMAKE_SOURCE_DIR}/devt/source/)
-CONFIGURE_FILE(cmake_config/unit_paths.hpp ${CMAKE_SOURCE_DIR}/unit_test/source/)
-
 ###
 ## Outputs
 ###
@@ -95,11 +90,8 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR})
 ## Setup
 ###
 
-CMEXT_REQUIRE(Clang_INCLUDE_DIRS "STIG requires Clang_INCLUDE_DIRS")
-
 SET(INCLUDE_DIRS 
 	${Boost_INCLUDE_DIRS}
-	${Clang_INCLUDE_DIRS}
 	${GTEST_INCLUDE_DIRS}
 	${LUA_INCLUDE_DIR})
 
@@ -107,28 +99,8 @@ SET(INCLUDE_DIRS
 ## Modules
 ###
 
-## Add Module cAttrib
-IF(EXISTS ${CMAKE_SOURCE_DIR}/cAttrib)
-	CMEXT_ADD_MODULE(cAttrib PATH cAttrib)
-ELSE()
-	SET(CAttrib_INCLUDE_DIR "" CACHE PATH "## STIG: Root Directory containing headers of cAttrib")
-	SET(CAttrib_LIBRARIES   "" CACHE PATH "## STIG: Path of cAttrib lib: libcAttrib.a/cAttrib.lib")
-ENDIF()
+## Add Module CES
 
-
-## Add Module STI
-IF(EXISTS ${CMAKE_SOURCE_DIR}/STI)
-	CMEXT_ADD_MODULE(STI PATH STI)
-ELSE()
-	SET(STI_INCLUDE_DIR "" CACHE PATH "## STIG: Root Directory containing headers of STI")
-	SET(STI_LIBRARIES   "" CACHE PATH "## STIG: Directory containing libSTI.a/STI.lib")
-ENDIF()
-
-
-## Add Module STIG
-CMEXT_ADD_MODULE(STIG)
-CMEXT_ADD_MODULE(CES_DEV)
-
-#CMEXT_SOURCE_GROUP(STI)
+CMEXT_ADD_MODULE(CES)
 
 

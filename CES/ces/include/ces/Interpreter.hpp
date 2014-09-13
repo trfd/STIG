@@ -2,10 +2,10 @@
 ///  Interpreter.hpp
 ///  is part of CES Library.
 ///
-///  Static Type Info Generator - A C++ Static Reflexion Tool based on Clang.
-///  Get more infos on STIG at <https://github.com/trfd/STI>
+///  C++ Embedded Script - CES is used to write template file for code generation.
+///  More information about CES at <https://github.com/trfd/CES>
 ///
-///  Created by Baptiste Dupy on 10/09/2014.
+///  Created by Baptiste Dupy on 12/09/2014.
 ///  Contact:
 ///          Mail:       <baptiste.dupy@gmail.com>
 ///          GitHub:     trfd <https://github.com/trfd>
@@ -26,8 +26,8 @@
 ///  You should have received a copy of the GNU General Public License
 ///  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef STIG_Interpreter_hpp
-#define STIG_Interpreter_hpp
+#ifndef CES_Interpreter_hpp
+#define CES_Interpreter_hpp
 
 
 

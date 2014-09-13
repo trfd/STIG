@@ -2,25 +2,44 @@ CMEXT_REQUIRE(Boost_FOUND       "CES requires Boost")
 CMEXT_REQUIRE(LUA_FOUND         "CES requires Lua")
 CMEXT_REQUIRE(SWIG_FOUND        "CES requires SWIG")
 
-CMEXT_ADD_FILE_DIR(CES ces/include)
-CMEXT_ADD_FILE_DIR(CES ces/src)
+## Library
 
-SET(CES_DEV_LINK_LIBS 
+CMEXT_ADD_FILE_DIR(CES CES ces/include)
+CMEXT_ADD_FILE_DIR(CES CES ces/src)
+
+SET(CES_LINK_LIBS 
 	${Boost_LIBRARIES}
 	${LUA_LIBRARIES}
 	)
 
-CMEXT_ADD_LIBRARY(CES STATIC)
+CMEXT_ADD_LIBRARY(CES CES STATIC)
+
+## Run SWIG
+
+ADD_CUSTOM_TARGET(Run_CES_SWIG
+    COMMAND ${SWIG_EXECUTABLE} -c++ -lua -o ${CES_ROOT_DIR_GLOBAL}/ces/src/swig/CES_wrap.cpp ${CES_ROOT_DIR_GLOBAL}/ces/include/ces/CES.swg 
+)
+
+## Development executable
+
+CMEXT_ADD_FILE_DIR(CES CES_Dev ces/include)
+CMEXT_ADD_FILE_DIR(CES CES_Dev ces/src)
+CMEXT_ADD_FILE_DIR(CES CES_Dev devt)
+
+SET(CES_Dev_LINK_LIBS 
+	${Boost_LIBRARIES}
+	${LUA_LIBRARIES}
+	)
+
+CMEXT_ADD_EXECUTABLE(CES CES_Dev)
+
+## Output variables
 
 STATIC_LIB_NAME(CES)
 
 SET(CES_INCLUDE_DIR ${CES_ROOT_DIR_GLOBAL}/ces/include)
 SET(CES_LIBRARIES   ${LIB_DIR}/${CES_STATIC_LIB_NAME} )
 
-
-ADD_CUSTOM_TARGET(Run_CES_SWIG
-    COMMAND ${SWIG_EXECUTABLE} -c++ -lua -o ${CES_ROOT_DIR_GLOBAL}/ces/src/swig/CES_wrap.cpp ${CES_ROOT_DIR_GLOBAL}/ces/include/ces/CES.swg 
-)
-
+## Source Grouping
 
 CMEXT_SOURCE_GROUP(CES ces)

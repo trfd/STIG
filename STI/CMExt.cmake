@@ -105,31 +105,32 @@ MACRO(cmext_add_module _name)
 			MESSAGE("***WARNING: Module ${_name} does not define ${_name}_INCLUDE_DIR")
 		ENDIF()
 
-  		SET_PROPERTY(TARGET ${_name}
+		FOREACH(_target ${${_name}_TARGETS})
+			SET_PROPERTY(TARGET ${_target}
 					 PROPERTY INCLUDE_DIRECTORIES
 					 ${INCLUDE_DIRS}
 					 )
+		ENDFOREACH()
+  		
 	ELSE()
 		MESSAGE("Module File ${${name}_MODULE_FILE} not found")
 	ENDIF()
 
-	SET(SOURCE_GROUP_PREFIX ${${_name}_ROOT_DIR_GLOBAL})
-
-	cmext_source_group(${_name})
-
 ENDMACRO(cmext_add_module)
 
 
-### Apply Source Grouping to a module _name
-MACRO(cmext_source_group _name)
+### Apply Source Grouping to a module _module
+MACRO(cmext_source_group _module _root)
 
-	SET(_SRC_GRP_OUT_FILE ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group_${_name}.cmake)
+	SET(SOURCE_GROUP_PREFIX ${${_module}_ROOT_DIR_GLOBAL})
 
-	IF(EXISTS ${${_name}_ROOT_DIR_GLOBAL}/src_grp)
+	SET(_SRC_GRP_OUT_FILE ${${_module}_ROOT_DIR_GLOBAL}/cmake_config/src_group_${_module}.cmake)
+
+	IF(EXISTS ${${_module}_ROOT_DIR_GLOBAL}/src_grp)
 		MESSAGE("=====================================================")
 		MESSAGE(" | Command: ")
 		EXECUTE_PROCESS(
-			COMMAND ${${_name}_ROOT_DIR_GLOBAL}/src_grp ${_name} ${_SRC_GRP_OUT_FILE}
+			COMMAND ${${_module}_ROOT_DIR_GLOBAL}/src_grp ${_root} ${_SRC_GRP_OUT_FILE}
 			)
 		MESSAGE("=====================================================")
 	ENDIF()
@@ -147,12 +148,12 @@ ENDMACRO(cmext_source_group)
 ### This basically fills the variable
 ### <_name>_FILES with the content of 
 ### directory _filedir.
-MACRO(cmext_add_file_dir _name _filedir)
+MACRO(cmext_add_file_dir _module _name _filedir)
 	
 	FILE(	
 		GLOB_RECURSE 
 		tmp_files 
-		${${_name}_ROOT_DIR_GLOBAL}/${_filedir}/*
+		${${_module}_ROOT_DIR_GLOBAL}/${_filedir}/*
 	)
 
 	IF(${_name}_FILES)
@@ -168,7 +169,7 @@ ENDMACRO(cmext_add_file_dir)
 ### The links used are <_name>_LINK_LIBS.
 ### _libType is the type of library (static, dynamic,...)
 ### Usage cmext_add_library(LibName [STATIC|SHARED...])
-MACRO(cmext_add_library _name _libType)
+MACRO(cmext_add_library _module _name _libType)
 
 	IF(NOT ${_name}_FILES)
 		MESSAGE(FATAL_ERROR "Variable ${_name}_FILES not set before add library")
@@ -194,13 +195,15 @@ MACRO(cmext_add_library _name _libType)
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG   ${LIB_DIR})
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_DIR})
 
+	SET(${_module}_TARGETS ${${_module}_TARGETS} ${_name})
+
 ENDMACRO(cmext_add_library)
 
 ### Add an executable target to a module and link to libs.
 ### The source files used are <_name>_FILES.
 ### The links used are <_name>_LINK_LIBS.
 ### Usage cmext_add_executable(LibName)
-MACRO(cmext_add_executable _name)
+MACRO(cmext_add_executable _module _name)
 
 	IF(NOT ${_name}_FILES)
 		MESSAGE(FATAL_ERROR "Variable ${_name}_FILES not set before add executable")
@@ -226,6 +229,8 @@ MACRO(cmext_add_executable _name)
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${BIN_DIR})
 	SET_TARGET_PROPERTIES(${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR})
 
+	SET(${_module}_TARGETS ${${_module}_TARGETS} ${_name})
+
 ENDMACRO(cmext_add_executable)
 
 ### Add unit test executable target to a module and link to libs.
@@ -233,7 +238,7 @@ ENDMACRO(cmext_add_executable)
 ### the unit test sources are found in directory _unit_dir.
 ### The links used are <_name>_LINK_LIBS and UNIT_TEST_FRAMEWORK_LIBRARIES
 ### Usage cmext_add_executable(LibName)
-MACRO(cmext_add_unit_test _name _unit_dir)
+MACRO(cmext_add_unit_test _module _target _unit_dir)
 
 	IF(NOT UNIT_TEST_FRAMEWORK_LIBRARIES OR NOT UNIT_TEST_FRAMEWORK_INCLUDE_DIR) 
     	MESSAGE(FATAL_ERROR "Unit Test framework not defined")
@@ -243,7 +248,7 @@ MACRO(cmext_add_unit_test _name _unit_dir)
 	FILE(	
 		GLOB_RECURSE 
 		${_name}_UNIT_FILES 
-		${${name}_ROOT_DIR_GLOBAL}/${_unit_dir}/*
+		${${_module}_ROOT_DIR_GLOBAL}/${_unit_dir}/*
 	)
 
 	ADD_EXECUTABLE(

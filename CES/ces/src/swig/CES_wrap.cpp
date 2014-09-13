@@ -2650,7 +2650,7 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
 }
 
 
-#include "stig/ces/CES.hpp"
+#include "ces/CES.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -2659,10 +2659,10 @@ static int _wrap_out(lua_State* L) {
   int SWIG_arg = 0;
   char *arg1 = (char *) 0 ;
   
-  SWIG_check_num_args("stig::ces::out",1,1)
-  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("stig::ces::out",1,"char const *");
+  SWIG_check_num_args("ces::out",1,1)
+  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("ces::out",1,"char const *");
   arg1 = (char *)lua_tostring(L, 1);
-  stig::ces::out((char const *)arg1);
+  ces::out((char const *)arg1);
   
   return SWIG_arg;
   
