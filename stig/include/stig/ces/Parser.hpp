@@ -21,7 +21,6 @@ namespace stig
 {
     namespace ces
     {
-        
         /// <summary>
         /// CES parser.
         /// </summary>
