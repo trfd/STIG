@@ -29,3 +29,5 @@ SET(STIG_LIBRARIES   ${LIB_DIR}/${STIG_STATIC_LIB_NAME} )
 ADD_CUSTOM_TARGET(RunSWIG
     COMMAND ${SWIG_EXECUTABLE} -c++ -lua -o ${STIG_ROOT_DIR_GLOBAL}/stig/src/swig/CES_wrap.cpp ${STIG_ROOT_DIR_GLOBAL}/stig/include/stig/ces/CES.swg 
 )
+
+cmext_source_group(STIG stig)

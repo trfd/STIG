@@ -113,15 +113,13 @@ MACRO(cmext_add_module _name)
 		MESSAGE("Module File ${${name}_MODULE_FILE} not found")
 	ENDIF()
 
-	SET(SOURCE_GROUP_PREFIX ${${_name}_ROOT_DIR_GLOBAL})
-
-	cmext_source_group(${_name})
-
 ENDMACRO(cmext_add_module)
 
 
 ### Apply Source Grouping to a module _name
-MACRO(cmext_source_group _name)
+MACRO(cmext_source_group _name _root)
+
+	SET(SOURCE_GROUP_PREFIX ${${_name}_ROOT_DIR_GLOBAL})
 
 	SET(_SRC_GRP_OUT_FILE ${${_name}_ROOT_DIR_GLOBAL}/cmake_config/src_group_${_name}.cmake)
 
@@ -129,7 +127,7 @@ MACRO(cmext_source_group _name)
 		MESSAGE("=====================================================")
 		MESSAGE(" | Command: ")
 		EXECUTE_PROCESS(
-			COMMAND ${${_name}_ROOT_DIR_GLOBAL}/src_grp ${_name} ${_SRC_GRP_OUT_FILE}
+			COMMAND ${${_name}_ROOT_DIR_GLOBAL}/src_grp ${_root} ${_SRC_GRP_OUT_FILE}
 			)
 		MESSAGE("=====================================================")
 	ENDIF()
