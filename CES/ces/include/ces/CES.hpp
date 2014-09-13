@@ -49,7 +49,7 @@
 
 namespace ces
 {
-    extern void out(const char* str_);
+    extern void out(unsigned sessionID, const char* str_);
 }
 
 #endif

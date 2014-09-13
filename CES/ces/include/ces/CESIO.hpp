@@ -1,5 +1,5 @@
 ///
-///  LuaVM.hpp
+///  CESIO.hpp
 ///  is part of CES Library.
 ///
 ///  C++ Embedded Script - CES is used to write template file for code generation.
@@ -26,78 +26,70 @@
 ///  You should have received a copy of the GNU General Public License
 ///  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CES_LuaVM_hpp
-#define CES_LuaVM_hpp
+#ifndef STIG_CESIO_hpp
+#define STIG_CESIO_hpp
 
-#include <iostream>
+#include <map>
 
-extern "C"
-{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-    
-extern int luaopen_CES(lua_State* L); // declare the wrapped module
-}
+#include "Singleton.hpp"
+
+#include "InterpreterSession.hpp"
 
 namespace ces
 {
     /// <summary>
-    /// Wrap Lua virtual machine call for simplified interface.
+    /// I/O interface for Lua / CES
     /// </summary>
-    class LuaVM
+    /// This class register interpreter session
+    /// and forward CES.out call from lua to
+    /// corresponding interpreter sessions
+    class IO : public ck::utils::Singleton<IO>
     {
     public:
         
+        typedef InterpreterSession              Session;
+        typedef std::map<unsigned,Session*>     SessionMap;
+        typedef SessionMap::iterator            SessionMap_it;
+        
+        inline static IO* instance(){return ck::utils::Singleton<IO>::instance();}
+        
         /// <summary>
-        /// Opens Lua VM and CES
+        /// Registers an interpreter sessions
         /// </summary>
-        inline void open()
+        /// When IO receive an out call with the session's id
+        /// IO forward output to the session.
+        static void registerSession(Session* s_)
         {
-            m_luaState = luaL_newstate();
-            luaL_openlibs(m_luaState);
-            luaopen_CES(m_luaState);
+            instance()->m_sessions[s_->id] = s_;
         }
         
         /// <summary>
-        /// Closes VM.
+        /// Unregisters an interpreter sessions
         /// </summary>
-        inline void close()
+        static void unregisterSession(Session* s_)
         {
-            lua_close(m_luaState);
+            instance()->m_sessions.erase(s_->id);
         }
         
         /// <summary>
-        /// Run a lua script.
+        /// Forward a CES.out call from lua to interpreter session that matches id.
         /// </summary>
-        inline void runFile(const char* file_)
+        inline static void out(unsigned sessionID_,const char* str_)
         {
-            if(luaL_loadfile(m_luaState,file_)==0) // load and run the file
-                lua_pcall(m_luaState,0,0,0);
-            else
-               std::cout<<"ERROR: Unable to load "<<file_<<"\n";
+            SessionMap_it it = instance()->m_sessions.find(sessionID_);
+            
+            if(it != instance()->m_sessions.end())
+                it->second->out(str_);
         }
-        
-        /// <summary>
-        /// Run a chunk lua script.
-        /// </summary>
-        inline void runChunk(const std::string& snippet)
-        {
-            if(luaL_loadstring(m_luaState,snippet.c_str())==0) // load and run the file
-                lua_pcall(m_luaState,0,0,0);
-            else
-                std::cout<<"ERROR: Unable to load "<<snippet<<"\n";
-        }
-    
         
     private:
         
+        
         /// <summary>
-        /// Current state of the Lua VM
+        /// Map of all registered session by ID.
         /// </summary>
-        lua_State *m_luaState;
+        SessionMap m_sessions;
     };
 }
-
 
 #endif

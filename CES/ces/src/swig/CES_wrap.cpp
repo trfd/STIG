@@ -2657,12 +2657,16 @@ extern "C" {
 #endif
 static int _wrap_out(lua_State* L) {
   int SWIG_arg = 0;
-  char *arg1 = (char *) 0 ;
+  unsigned int arg1 ;
+  char *arg2 = (char *) 0 ;
   
-  SWIG_check_num_args("ces::out",1,1)
-  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("ces::out",1,"char const *");
-  arg1 = (char *)lua_tostring(L, 1);
-  ces::out((char const *)arg1);
+  SWIG_check_num_args("ces::out",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("ces::out",1,"unsigned int");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("ces::out",2,"char const *");
+  SWIG_contract_assert((lua_tonumber(L,1)>=0),"number must not be negative")
+  arg1 = (unsigned int)lua_tonumber(L, 1);
+  arg2 = (char *)lua_tostring(L, 2);
+  ces::out(arg1,(char const *)arg2);
   
   return SWIG_arg;
   

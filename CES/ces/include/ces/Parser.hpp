@@ -240,6 +240,14 @@ namespace ces
         }
         
         /// <summary>
+        /// Returns parser AST.
+        /// </summary>
+        std::shared_ptr<AST> ast()
+        {
+            return m_state.ast_ptr;
+        }
+        
+        /// <summary>
         /// Parse a chunk of CES code
         /// </summary>
         void parse(const std::string& cesChunk_)
