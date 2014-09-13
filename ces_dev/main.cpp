@@ -30,33 +30,25 @@
 #define __STDC_LIMIT_MACROS
 #define __STDC_CONSTANT_MACROS
 
-#include <stdio.h>
+#include <iostream>
 
-//#define LUA_EXTRALIBS {"example",luaopen_example}
-extern "C"
-{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-    
-extern int luaopen_example(lua_State* L); // declare the wrapped module
-}
+#include "stig/ces/CES.hpp"
+#include "stig/ces/LuaVM.hpp"
 
 int main(int argc,char* argv[])
 {
-    lua_State *L = luaL_newstate();
     if (argc<2)
     {
         printf("%s: <filename.lua>\n",argv[0]);
         return 0;
     }
+
     
-    luaL_openlibs(L);
-    luaopen_example(L);	// load the wrappered module
-    if (luaL_loadfile(L,argv[1])==0) // load and run the file
-        lua_pcall(L,0,0,0);
-    else
-        printf("unable to load %s\n",argv[1]);
-    lua_close(L);
+    stig::ces::Parser parser;
+    
+    parser.parse("source1@[lua1]@source2@[lua2@out1@lua3]@source3@out2@source4");
+    
+    parser.dump();
+
     return 0;
 }

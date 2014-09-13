@@ -9,6 +9,8 @@
 #ifndef STIG_LuaVM_hpp
 #define STIG_LuaVM_hpp
 
+#include <iostream>
+
 extern "C"
 {
 #include "lua.h"
@@ -22,26 +24,43 @@ namespace stig
 {
     namespace ces
     {
-
         
-        int main(int argc,char* argv[])
+        class LuaVM
         {
-            lua_State *L = luaL_newstate();
-            if (argc<2)
+        public:
+            
+            inline void open()
             {
-                printf("%s: <filename.lua>\n",argv[0]);
-                return 0;
+                m_luaState = luaL_newstate();
+                luaL_openlibs(m_luaState);
+                luaopen_CES(m_luaState);
             }
             
-            luaL_openlibs(L);
-            luaopen_example(L);	// load the wrappered module
-            if (luaL_loadfile(L,argv[1])==0) // load and run the file
-                lua_pcall(L,0,0,0);
-            else
-                printf("unable to load %s\n",argv[1]);
-            lua_close(L);
-            return 0;
-        }
+            inline void close()
+            {
+                lua_close(m_luaState);
+            }
+            
+            inline void runFile(const char* file_)
+            {
+                if(luaL_loadfile(m_luaState,file_)==0) // load and run the file
+                    lua_pcall(m_luaState,0,0,0);
+                else
+                   std::cout<<"ERROR: Unable to load "<<file_<<"\n";
+            }
+            
+            inline void runChunk(const std::string& snippet)
+            {
+                if(luaL_loadstring(m_luaState,snippet.c_str())==0) // load and run the file
+                    lua_pcall(m_luaState,0,0,0);
+                else
+                    std::cout<<"ERROR: Unable to load "<<snippet<<"\n";
+            }
+            
+        private:
+            
+            lua_State *m_luaState;
+        };
     }
 }
 
