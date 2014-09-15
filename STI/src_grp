@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+old_wd = Pathname.new( Dir.pwd )
+
+## CMake Working Directory
+cmake_wd = File.dirname(__FILE__)
+
+Dir.chdir(cmake_wd)
+
+puts "Working Directory: #{cmake_wd}"
+
+
+src_dir = "sti";
+
+## File writing location
+##cmake_cfg = File.new("cmake_config/src_group.cmake")
+
+File.open("cmake_config/src_group.cmake", 'w') {}
+
+
+def write_conf(dir)
+
+  	tmp = dir.to_s.gsub(/\/$/ ,'')
+
+  	var_n = tmp.gsub(/[\/\s]/,'_')
+  	sol_p = tmp.gsub(/[\/\s]/,"\\_")
+  	sol_p = sol_p.to_s.gsub(/[_]/,"\\")
+
+  	puts sol_p
+
+	open("cmake_config/src_group.cmake", 'a') { |f|
+  		f.puts "FILE(GLOB #{var_n} ${SOURCE_GROUP_PREFIX}/#{dir}*)"
+		f.puts "SOURCE_GROUP(\"#{sol_p}\" FILES ${#{var_n}})"
+  	}
+
+end
+
+## Root of sources file
+directories = Dir[src_dir+'/*/']
+
+dir = directories
+
+idx = 0
+
+parentIdx = [0]
+
+currDir = Pathname.new(cmake_wd+"/"+src_dir+"/")
+
+while idx <= dir.length && parentIdx.length != 0 do
+	if idx >= dir.length
+		idx = parentIdx.pop
+		currDir = currDir+'..'
+		dir = Dir[currDir+'*/']
+		idx+=1
+	else
+		parentIdx.push(idx)
+		currDir = Pathname.new(dir.at(idx))
+		dir = Dir[currDir+'*/']
+		idx = 0
+		write_conf(currDir)
+	end
+end 
+
+
+Dir.chdir(old_wd)
