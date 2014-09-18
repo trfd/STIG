@@ -33,82 +33,67 @@
 #include <iostream>
 
 #include "Serialization.hpp"
+#include "Decl.hpp"
 
 namespace sti
 {
     struct DeclNode
     {
-        enum Type
+        enum Kind
         {
-            DN_unknown,
-            DN_field,
-            DN_method,
-            DN_record
+            UNKNOWN,
+            FIELD,
+            METHOD,
+            RECORD
         };
         
         enum Access
         {
-            access_none,
+            NONE,
             
-            access_public,
-            access_protected,
-            access_private
+            PUBLIC,
+            PROTECTED,
+            PRIVATE
         };
         
         DeclNode()
-        : m_type(DN_unknown)
+        : m_kind(UNKNOWN)
         {}
         
-        DeclNode(const Type& t_)
-        : m_type(t_)
+        DeclNode(const Kind& t_)
+        : m_kind(t_)
         {}
     
-        inline Type type(){ return m_type; }
+        inline Kind kind(){ return m_kind; }
         
     private:
         
-        Type m_type;
+        Kind m_kind;
     };
     
     class RecordDeclNode;
     
-    struct FieldDeclNode : public DeclNode
+    struct FieldDeclNode : public DeclNode, public Field
     {
         FieldDeclNode()
-        : DeclNode(DN_field)
+        : DeclNode(FIELD)
         {}
-        
-        std::string _name;
-        std::string _type;
     };
     
-    struct MethodDeclNode : public DeclNode
+    struct MethodDeclNode : public DeclNode, public Method
     {        
         MethodDeclNode()
-        : DeclNode(DN_method)
+        : DeclNode(METHOD)
         {}
-
-        std::string _name;
-        std::vector<std::string> _params;
     };
     
-    class RecordDeclNode : public DeclNode
+    class RecordDeclNode : public DeclNode, public Type
     {
     public:
         
         RecordDeclNode()
-        : DeclNode(DN_record)
+        : DeclNode(RECORD)
         {}
-        
-        Access _access;
-        
-        std::string _name;
-        
-        std::string _context;
-        
-        std::vector<FieldDeclNode*> _fields;
-        
-        std::vector<MethodDeclNode*> _methods;
     };
 }
 

@@ -39,13 +39,13 @@ namespace sti
     {
         switch(acc_)
         {
-            case DeclNode::access_public:
+            case DeclNode::PUBLIC:
                 return "public";
-            case DeclNode::access_protected:
+            case DeclNode::PROTECTED:
                 return "protected";
-            case DeclNode::access_private:
+            case DeclNode::PRIVATE:
                 return "private";
-            case DeclNode::access_none:
+            case DeclNode::NONE:
             default:
                 return "none";
         }
@@ -56,8 +56,8 @@ namespace sti
     {
         DictSerialValue* dict = new DictSerialValue();
 
-        dict->_dictValue["name"] = new StringSerialValue(node->_name);
-        dict->_dictValue["type"] = new StringSerialValue(node->_type);
+        dict->_dictValue["name"] = new StringSerialValue(node->name());
+        dict->_dictValue["type"] = new StringSerialValue(node->type()->name());
         
         return dict;
     }
@@ -66,7 +66,7 @@ namespace sti
     {
         DictSerialValue* dict = new DictSerialValue();
         
-        dict->_dictValue["name"] = new StringSerialValue(node->_name);
+        dict->_dictValue["name"] = new StringSerialValue(node->name());
         //dict._dictValue["type"] = new StringSerialValue(node->_type);
         
         return dict;
