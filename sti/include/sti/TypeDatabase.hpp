@@ -27,13 +27,42 @@
 ///  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ///
 
-#ifndef STI_TypeDatabase_h
-#define STI_TypeDatabase_h
+#ifndef STI_TypeDatabase_hpp
+#define STI_TypeDatabase_hpp
+
+#include <map>
+#include <string>
+
+#include "cytok/utils/Singleton.hpp"
+
+#include "Decl.hpp"
 
 namespace sti
 {
-    class TypeDatabase
+    class TypeDatabase : public ck::utils::Singleton<TypeDatabase>
     {
+    public:
+        
+        typedef std::shared_ptr<Type>           Type_ptr;
+        typedef std::map<std::string, Type_ptr> TypeMap;
+        typedef TypeMap::iterator               TypeMap_it;
+        
+        inline static TypeDatabase* instance(){return ck::utils::Singleton<TypeDatabase>::instance();}
+        
+        inline void addType(const Type_ptr& t){ m_typeMap[t->fullname()] = t; }
+        
+        inline Type_ptr typeWith(const std::string& fullname)
+        {
+            TypeMap_it it = m_typeMap.find(fullname);
+            
+            if(it != m_typeMap.end())
+                return it->second;
+            return Type_ptr(nullptr);
+        }
+        
+    private:
+        
+        TypeMap m_typeMap;
         
     };
 }
