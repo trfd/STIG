@@ -107,6 +107,13 @@ SET(INCLUDE_DIRS
 ## Modules
 ###
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CytokUtils)
+	CMEXT_ADD_MODULE(CytokUtils PATH CytokUtils)
+ELSE()
+	SET(CytokUtils_INCLUDE_DIR "" CACHE PATH "## STIG: Root Directory containing headers of CytokUtils")
+	SET(CytokUtils_LIBRARIES   "" CACHE PATH "## STIG: Path of cAttrib lib: libckutils.a/ckutils.lib")
+ENDIF()
+
 ## Add Module cAttrib
 IF(EXISTS ${CMAKE_SOURCE_DIR}/cAttrib)
 	CMEXT_ADD_MODULE(cAttrib PATH cAttrib)
