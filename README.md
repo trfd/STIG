@@ -1,4 +1,4 @@
 STIG
 ====
 
-Static Type Info Generator - A C++ Static Reflexion Tool based on Clang
+Static Type Info Generator - A C++ Static Type Introspection Tool based on Clang
