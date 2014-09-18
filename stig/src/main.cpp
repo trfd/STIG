@@ -46,9 +46,7 @@
 #include <sti/DeclNode.hpp>
 #include <sti/JSONWriter.hpp>
 #include <sti/NodeSerialization.hpp>
-
-#include "stig/DeclNodeFactory.hpp"
-#include "stig/Generators.hpp"
+#include <sti/DeclNodeFactory.hpp>
 
 using namespace clang;
 using namespace clang::tooling;
@@ -78,7 +76,7 @@ namespace stig
             Declaration->dump();
             
             recordDecls.push_back(static_cast<RecordDeclNode*>(
-                        nodeFactory.createProduct(DeclNode::DN_record,Declaration)));
+                        nodeFactory.createProduct(DeclNode::RECORD,Declaration)));
             
             return true;
         }
@@ -125,22 +123,11 @@ int main(int argc,const char **argv)
     
     sti::JSONWriter writer;
     std::ostringstream strStream;
-
-    stig::ClassInfoGenerator fgen;
     
     for(sti::RecordDeclNode* decl : stig::recordDecls)
     {
         writer.writeDict(strStream, sti::serialize(decl), 0);
         strStream<<"\n";
-        
-        fgen.setRecordDecl(decl);
-        
-        std::string fullname = decl->_context + decl->_name;
-        
-        boost::replace_all(fullname, "::" , "_");
-        
-        fgen.processTemplate("/Users/Baba/dev/trfd/STIG/devt/test_files/test_template.sting",
-                             "/Users/Baba/dev/trfd/STIG/devt/test_files/sti_"+fullname+".cpp");
     }
     
     std::cout<<strStream.str()<<"\n";
