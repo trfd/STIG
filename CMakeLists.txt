@@ -10,14 +10,14 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_config")
 ## Load CMExt 
 ### 
 
-IF(EXISTS ${CMAKE_SOURCE_DIR}/CMExt.cmake)
-	INCLUDE(${CMAKE_SOURCE_DIR}/CMExt.cmake)
+IF(EXISTS ${CMAKE_SOURCE_DIR}/cmake_config/CMExt.cmake)
+	INCLUDE(${CMAKE_SOURCE_DIR}/cmake_config/CMExt.cmake)
 ELSE()
-	MESSAGE(FATAL_ERROR "CMake Extention file (CMExt.cmake) not found ")
+	MESSAGE(FATAL_ERROR "CMake Extention file (cmake_config/CMExt.cmake) not found ")
 ENDIF()
 
 IF(NOT CMEXT_INCLUDED)
-	MESSAGE(FATAL_ERROR "CMExt.cmake not included and required")
+	MESSAGE(FATAL_ERROR "cmake_config/CMExt.cmake not included and required")
 ENDIF()
 
 ###
