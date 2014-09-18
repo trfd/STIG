@@ -33,9 +33,10 @@
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclCXX.h>
 
-#include <sti/DeclNode.hpp>
+#include <cytok/utils/UniFactory.hpp>
 
-#include "UniFactory.hpp"
+#include "DeclNode.hpp"
+#include "TypeDatabase.hpp"
 
 using namespace clang;
 using namespace sti;
@@ -44,7 +45,7 @@ namespace stig
 {
     typedef std::function<DeclNode*(Decl*)> DeclNodeCreator;
     
-    typedef ck::UniFactory<DeclNode,DeclNode::Type,DeclNodeCreator> DeclNodeUniFactory;
+    typedef ck::UniFactory<DeclNode,DeclNode::Kind,DeclNodeCreator> DeclNodeUniFactory;
     
     struct DeclNodeFactory : public DeclNodeUniFactory
     {
@@ -57,8 +58,8 @@ namespace stig
             
             FieldDeclNode* node = new FieldDeclNode();
             
-            node->_name = fieldDecl->getNameAsString();
-            node->_type = fieldDecl->getType().getAsString();
+            node->setName(fieldDecl->getNameAsString());
+            node->setType(TypeDatabase::instance()->typeWith(fieldDecl->getType().getAsString()));
             
             return node;
         }
@@ -75,7 +76,7 @@ namespace stig
             
             MethodDeclNode* node = new MethodDeclNode();
             
-            node->_name = methDecl->getNameAsString();
+            node->setName(methDecl->getNameAsString());
             
             return node;
         }
@@ -89,15 +90,15 @@ namespace stig
             
             RecordDeclNode* node = new RecordDeclNode();
             
-            node->_name = recordDecl->getNameAsString();
+            node->setName(recordDecl->getNameAsString());
             
-            node->_access = (DeclNode::Access) recordDecl->getAccess();
+            node->setAccess((Access) recordDecl->getAccess());
             
             /// Retrieve methods
             for(CXXRecordDecl::method_iterator it = recordDecl->method_begin() ;
                 it != recordDecl->method_end() ; ++it)
             {
-                node->_methods.push_back(static_cast<MethodDeclNode*>(createMethod(*it)));
+                node->addMethod(static_cast<MethodDeclNode*>(createMethod(*it)));
             }
             
             /// Retrieve fields
@@ -106,7 +107,7 @@ namespace stig
             {
                 if(it->getKind() == Decl::Kind::Field)
                 {
-                    node->_fields.push_back(static_cast<FieldDeclNode*>(createField(static_cast<FieldDecl*>(*it))));
+                    node->addField(static_cast<FieldDeclNode*>(createField(static_cast<FieldDecl*>(*it))));
                 }
             }
             
@@ -117,7 +118,7 @@ namespace stig
         
         static void extractContext(CXXRecordDecl* astptr,RecordDeclNode* decl)
         {
-            decl->_context = "";
+            std::string tmpCtx = "";
             
             DeclContext* dclCtx = astptr->getDeclContext();
             
@@ -125,11 +126,11 @@ namespace stig
             {
                 if(dclCtx->isNamespace())
                 {
-                    decl->_context = static_cast<NamespaceDecl*>(dclCtx)->getNameAsString() + "::" + decl->_context;
+                    tmpCtx = static_cast<NamespaceDecl*>(dclCtx)->getNameAsString() + "::" + tmpCtx;
                 }
                 else if(dclCtx->isRecord())
                 {
-                    decl->_context = static_cast<CXXRecordDecl*>(dclCtx)->getNameAsString() + "::" + decl->_context;
+                    tmpCtx = static_cast<CXXRecordDecl*>(dclCtx)->getNameAsString() + "::" + tmpCtx;
                 }
                 
                 dclCtx = dclCtx->getParent();
@@ -139,9 +140,9 @@ namespace stig
         
         void registerAllCreator()
         {
-            registerCreator(DeclNode::DN_field,&DeclNodeFactory::createField);
-            registerCreator(DeclNode::DN_method,&DeclNodeFactory::createMethod);
-            registerCreator(DeclNode::DN_record,&DeclNodeFactory::createRecord);
+            registerCreator(DeclNode::FIELD,&DeclNodeFactory::createField);
+            registerCreator(DeclNode::METHOD,&DeclNodeFactory::createMethod);
+            registerCreator(DeclNode::RECORD,&DeclNodeFactory::createRecord);
         }
     };
 

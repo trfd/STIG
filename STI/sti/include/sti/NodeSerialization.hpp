@@ -35,22 +35,7 @@
 namespace sti
 {
     
-    std::string access(const DeclNode::Access& acc_)
-    {
-        switch(acc_)
-        {
-            case DeclNode::PUBLIC:
-                return "public";
-            case DeclNode::PROTECTED:
-                return "protected";
-            case DeclNode::PRIVATE:
-                return "private";
-            case DeclNode::NONE:
-            default:
-                return "none";
-        }
-    }
-    
+       
    
     DictSerialValue* serialize(FieldDeclNode* node)
     {
@@ -76,19 +61,25 @@ namespace sti
     {
         DictSerialValue* dict = new DictSerialValue();
         
-        dict->_dictValue["access"] = new StringSerialValue(access(node->_access));
-        dict->_dictValue["name"]   = new StringSerialValue(node->_name);
-        dict->_dictValue["context"]= new StringSerialValue(node->_context);
+        dict->_dictValue["access"] = new StringSerialValue(node->accessAsString());
+        dict->_dictValue["name"]   = new StringSerialValue(node->name());
+        dict->_dictValue["context"]= new StringSerialValue(node->context());
         
         ArraySerialValue* arrFields = new ArraySerialValue();
-        for(FieldDeclNode* field : node->_fields)
+        for(unsigned idx = 0 ; idx < node->fieldCount() ; ++idx)
+        {
+            FieldDeclNode* field = (FieldDeclNode*) node->fields()[idx];
             arrFields->_arrayValue.push_back(serialize(field));
+        }
         
         dict->_dictValue["fields"] = arrFields;
         
         ArraySerialValue* arrMethods = new ArraySerialValue();
-        for(MethodDeclNode* method : node->_methods)
+        for(unsigned idx = 0 ; idx < node->methodCount() ; ++idx)
+        {
+            MethodDeclNode* method = (MethodDeclNode*) node->methods()[idx];
             arrMethods->_arrayValue.push_back(serialize(method));
+        }
         
         dict->_dictValue["methods"] = arrMethods;
         

@@ -47,15 +47,6 @@ namespace sti
             RECORD
         };
         
-        enum Access
-        {
-            NONE,
-            
-            PUBLIC,
-            PROTECTED,
-            PRIVATE
-        };
-        
         DeclNode()
         : m_kind(UNKNOWN)
         {}
