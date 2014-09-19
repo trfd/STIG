@@ -58,6 +58,9 @@ namespace stig
             
             FieldDeclNode* node = new FieldDeclNode();
             
+            std::cout<<"-----------Type:"<<fieldDecl->getType().getAsString()<<"\n";
+            std::cout<<"-----------C"<<fieldDecl->getType()->getTypeClassName()<<"\n";
+            
             node->setName(fieldDecl->getNameAsString());
             node->setType(TypeDatabase::instance()->typeWith(fieldDecl->getType().getAsString()));
             
