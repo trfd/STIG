@@ -69,7 +69,7 @@ namespace ck
             if(it == m_associations.end())
             {
                 _ErrorPolicy<_ProductID>::OnUnknownType(id);
-                return NULL;
+                return nullptr;
             }
             
             return &(it->second);

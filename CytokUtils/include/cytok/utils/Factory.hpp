@@ -80,7 +80,7 @@ namespace ck
             _ProductCreator* creator = _map->productCreator(id);
             
             if(!creator)
-                return NULL; // Assume that map already call ErrorPolicy
+                return nullptr; // Assume that map already call ErrorPolicy
             
             return (*creator)(std::forward<_Args>(args_)...);
         }
