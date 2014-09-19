@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
 ###
 ## Append Module Path
@@ -56,17 +56,6 @@ IF(MSVC)
     SET(CMAKE_CXX_FLAGS "/EHsc")
 ENDIF(MSVC)
 
-## Disable RTTI
-IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "${CMAKE_CXX_FLAGS} /GR-")
-ELSE()
-	MESSAGE(FATAL_ERROR "Unsupported compiler ${CMAKE_CXX_COMPILER_ID}")
-ENDIF()
-
 ###
 ## Configure Files
 ###
@@ -99,8 +88,16 @@ SET(INCLUDE_DIRS
 ## Modules
 ###
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CytokUtils)
+	CMEXT_ADD_MODULE(CytokUtils PATH CytokUtils)
+ELSE()
+	SET(CytokUtils_INCLUDE_DIR "" CACHE PATH "## STIG: Root Directory containing headers of CytokUtils")
+	SET(CytokUtils_LIBRARIES   "" CACHE PATH "## STIG: Path of cAttrib lib: libckutils.a/ckutils.lib")
+ENDIF()
+
 ## Add Module CES
 
 CMEXT_ADD_MODULE(CES)
+
 
 
